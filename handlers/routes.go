@@ -10,5 +10,5 @@ func SetRoutes(e *echo.Echo, userAuthService UserAuthService) {
 	e.GET("/", homeHandler.GetHome)
 
 	// auth routes
-	e.POST("/signIn", authHandler.PostUserHandler)
+	e.POST("/signIn", authHandler.SignInPostHandler)
 }

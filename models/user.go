@@ -1,4 +1,6 @@
-package model
+package models
+
+import "github.com/golang-jwt/jwt"
 
 type User struct {
 	Email string `form:"email"`
@@ -21,4 +23,9 @@ type UserRecord struct {
 	Name         string `form:"name"`
 	HashPassword string `form:"hash_password"`
 	Salt         string `form:"salt"`
+}
+
+type Claims struct {
+	Role string `json:"role"`
+	jwt.StandardClaims
 }

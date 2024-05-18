@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
-	"eatwo/model"
+	"eatwo/models"
 	"eatwo/shared"
 	"errors"
 	"fmt"
@@ -19,9 +19,9 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func (r UserRepository) GetByEmail(ctx context.Context, email string) (*model.UserRecord, error) {
+func (r UserRepository) GetByEmail(ctx context.Context, email string) (*models.UserRecord, error) {
 	rows := r.db.QueryRow("SELECT * FROM users WHERE email = ?", email)
-	var user model.UserRecord
+	var user models.UserRecord
 
 	if err := rows.Scan(&user.Email, &user.Name, &user.HashPassword, &user.Salt); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -33,7 +33,7 @@ func (r UserRepository) GetByEmail(ctx context.Context, email string) (*model.Us
 	return &user, nil
 }
 
-func (r UserRepository) Create(ctx context.Context, user *model.UserRecord) error {
+func (r UserRepository) Create(ctx context.Context, user *models.UserRecord) error {
 	_, err := r.db.ExecContext(ctx, "INSERT INTO users (email, name, hash_password, salt) VALUES (?, ?, ?, ?)",
 		user.Email, user.Name, user.HashPassword, user.Salt)
 

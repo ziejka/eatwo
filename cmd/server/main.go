@@ -22,6 +22,7 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	defer sqlDB.Close()
 
 	userRepository := db.NewUserRepository(sqlDB)
 	err = userRepository.Migrate(context.Background())

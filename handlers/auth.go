@@ -2,18 +2,17 @@ package handlers
 
 import (
 	"context"
-	"eatwo/model"
+	"eatwo/models"
 	"eatwo/shared"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
 type UserAuthService interface {
-	Create(ctx context.Context, signInData *model.UserSignIn) error
-	Validate(ctx context.Context, signInData *model.UserSignIn) error
+	Create(ctx context.Context, signInData models.UserSignIn) error
+	LogIn(ctx context.Context, signInData models.UserLogIn) (string, error)
 }
 
 type AuthHandler struct {
@@ -26,15 +25,33 @@ func NewAuthHandler(userAuthService UserAuthService) *AuthHandler {
 	}
 }
 
-func (a AuthHandler) PostUserHandler(c echo.Context) error {
-	var signInData model.UserSignIn
+func (a AuthHandler) LogInPostHandler(c echo.Context) error {
+	var logInData models.UserLogIn
+	if err := c.Bind(&logInData); err != nil {
+		c.Logger().Error(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
+	}
+
+	token, err := a.userAuthService.LogIn(c.Request().Context(), logInData)
+	if err != nil {
+		if errors.Is(err, shared.ErrUserWrongEmailOrPassword) {
+			return echo.NewHTTPError(http.StatusUnauthorized, "wrong email or password")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "something went wrong please try again")
+	}
+
+	c.Response().Header().Set("Authorization", "Bearer "+token)
+	return c.String(http.StatusOK, "Logged in successfully")
+}
+
+func (a AuthHandler) SignInPostHandler(c echo.Context) error {
+	var signInData models.UserSignIn
 	if err := c.Bind(&signInData); err != nil {
 		c.Logger().Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
 	}
-	c.Logger().Debug(fmt.Sprintf("%+v", signInData))
 
-	err := a.userAuthService.Create(c.Request().Context(), &signInData)
+	err := a.userAuthService.Create(c.Request().Context(), signInData)
 	if err != nil {
 		c.Logger().Error(err.Error())
 		if errors.Is(err, shared.ErrUserWithEmailExist) {
