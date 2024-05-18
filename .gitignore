@@ -1,0 +1,7 @@
+tmp
+bin
+
+app_data.db
+**/*_templ.go
+
+.DS_Store
