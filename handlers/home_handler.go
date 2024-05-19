@@ -1,7 +1,9 @@
 package handlers
 
 import (
-	"eatwo/views"
+	"eatwo/views/layouts"
+	"eatwo/views/pages"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
@@ -9,5 +11,5 @@ import (
 type Home struct{}
 
 func (h *Home) GetHome(c echo.Context) error {
-	return views.Layout().Render(c.Request().Context(), c.Response().Writer)
+	return Render(c, http.StatusOK, layouts.Base(pages.HomePage()))
 }

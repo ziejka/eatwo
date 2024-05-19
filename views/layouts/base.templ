@@ -1,0 +1,23 @@
+package layouts
+
+templ Base(children ...templ.Component) {
+	<html>
+		<head>
+			<title>Templ + HTMX + Tailwind</title>
+			<link href="/style.css" type="text/css" rel="stylesheet"/>
+			<script src="/js/htmx.min.js"></script>
+		</head>
+		<body>
+			<header>
+				<nav>
+					<a href="/">Home</a>
+					<a href="/about">About</a>
+					<a href="/contact">Contact</a>
+				</nav>
+			</header>
+			for _, child := range children {
+				@child
+			}
+		</body>
+	</html>
+}
