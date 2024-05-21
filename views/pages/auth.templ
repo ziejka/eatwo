@@ -1,0 +1,39 @@
+package pages
+
+import "eatwo/views/components"
+import "fmt"
+
+templ passwordForm(authType string) {
+	<div id="loading-overlay"></div>
+	<div id="auth-error" class="hidden"></div>
+	<form
+		hx-post={ string(templ.URL(fmt.Sprintf("/api/v1/%s", authType))) }
+		hx-swap="outerHTML"
+		hx-indicator="#loading-overlay"
+		class="grid gap-2 w-80 mx-auto"
+	>
+		<div class="grid">
+			<label for="email">Email</label>
+			@components.Input("email", "text", true)
+		</div>
+		<div class="grid">
+			<label for="email">Password</label>
+			@components.Input("password", "password", true)
+		</div>
+		<button type="submit" class="rounded bg-sky-500 text-sky-50 text-xl font-bold border border-sky-700 px-4 py-2">Submit</button>
+	</form>
+}
+
+templ LoginPage() {
+	<h1>Log In page</h1>
+	@passwordForm("login")
+}
+
+templ SignInPage() {
+	<h1>Sign In page</h1>
+	@passwordForm("signin")
+}
+
+templ AuthError(message string) {
+	<p id="auth-error" class="text-red-500">{ message }</p>
+}

@@ -5,5 +5,7 @@ app_data.db
 **/*_templ.go
 **/*_templ.txt
 
+node_modules
+
 
 .DS_Store

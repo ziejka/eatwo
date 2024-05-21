@@ -4,20 +4,23 @@ templ Base(children ...templ.Component) {
 	<html>
 		<head>
 			<title>Templ + HTMX + Tailwind</title>
-			<link href="/style.css" type="text/css" rel="stylesheet"/>
+			<link href="/css/tailwind.css" type="text/css" rel="stylesheet"/>
 			<script src="/js/htmx.min.js"></script>
 		</head>
-		<body>
-			<header>
+		<body class="bg-slate-200 text-slate-800">
+			<header class="p-4">
 				<nav>
 					<a href="/">Home</a>
-					<a href="/about">About</a>
-					<a href="/contact">Contact</a>
+					<a href="/login">Log In</a>
+					<a href="/signin">Sign In</a>
 				</nav>
 			</header>
-			for _, child := range children {
-				@child
-			}
+			<main class="p-4">
+				for _, child := range children {
+					@child
+				}
+			</main>
 		</body>
+		<script src="/js/index.js"></script>
 	</html>
 }

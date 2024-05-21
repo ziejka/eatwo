@@ -8,7 +8,10 @@ func SetRoutes(e *echo.Echo, userAuthService UserAuthService) {
 
 	// home routes
 	e.GET("/", homeHandler.GetHome)
+	e.GET("/signin", homeHandler.GetSignIn)
+	e.GET("/login", homeHandler.GetLogIn)
 
-	// auth routes
-	e.POST("/signIn", authHandler.SignInPostHandler)
+	// api
+	e.POST("/api/v1/signin", authHandler.SignInPostHandler)
+	e.POST("/api/v1/login", authHandler.LogInPostHandler)
 }

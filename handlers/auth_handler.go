@@ -4,6 +4,7 @@ import (
 	"context"
 	"eatwo/models"
 	"eatwo/shared"
+	"eatwo/views/pages"
 	"errors"
 	"net/http"
 
@@ -35,9 +36,11 @@ func (a AuthHandler) LogInPostHandler(c echo.Context) error {
 	token, err := a.userAuthService.LogIn(c.Request().Context(), logInData)
 	if err != nil {
 		if errors.Is(err, shared.ErrUserWrongEmailOrPassword) {
-			return echo.NewHTTPError(http.StatusUnauthorized, "wrong email or password")
+			c.Response().Header().Set("HX-Retarget", "#auth-error")
+			return render(c, http.StatusUnauthorized, pages.AuthError("Wrong email or password"))
 		}
-		return echo.NewHTTPError(http.StatusInternalServerError, "something went wrong please try again")
+		c.Response().Header().Set("HX-Retarget", "#auth-error")
+		return render(c, http.StatusUnauthorized, pages.AuthError("something went wrong please try again"))
 	}
 
 	c.Response().Header().Set("Authorization", "Bearer "+token)
@@ -55,10 +58,13 @@ func (a AuthHandler) SignInPostHandler(c echo.Context) error {
 	if err != nil {
 		c.Logger().Error(err.Error())
 		if errors.Is(err, shared.ErrUserWithEmailExist) {
-			return echo.NewHTTPError(http.StatusConflict, "User with such email already exist")
+			c.Response().Header().Set("HX-Retarget", "#auth-error")
+			return render(c, http.StatusUnauthorized, pages.AuthError("User with that email already exist"))
 		}
-		return echo.NewHTTPError(http.StatusInternalServerError, "Could not create user")
+		c.Response().Header().Set("HX-Retarget", "#auth-error")
+		return render(c, http.StatusUnauthorized, pages.AuthError("Could not create user"))
 	}
 
+	// TODO Redirect to homepage
 	return c.String(http.StatusCreated, "user created")
 }
