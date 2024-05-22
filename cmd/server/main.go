@@ -8,6 +8,7 @@ import (
 	"eatwo/services"
 	"log"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	gLog "github.com/labstack/gommon/log"
@@ -17,6 +18,11 @@ import (
 const dbFileName = "sqlite.db"
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	sqlDB, err := sql.Open("sqlite3", dbFileName)
 	if err != nil {
 		log.Fatal(err)
@@ -37,6 +43,8 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Logger.SetLevel(gLog.DEBUG)
+
+	// e.Use(echojwt.JWT(os.Getenv("JWT_SECRET")))
 
 	e.Static("/", "assets")
 	handlers.SetRoutes(e, userAuthService)

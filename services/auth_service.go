@@ -2,12 +2,11 @@ package services
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/sha256"
 	"eatwo/models"
 	"eatwo/shared"
-	"encoding/hex"
 	"errors"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository interface {
@@ -34,8 +33,8 @@ func (a AuthService) LogIn(ctx context.Context, logInData models.UserLogIn) (str
 		return "", err
 	}
 
-	hashedPassword := createHashedPassword(user.Salt, logInData.Password)
-	if hashedPassword != user.HashPassword {
+	err = bcrypt.CompareHashAndPassword([]byte(user.HashPassword), []byte(logInData.Password))
+	if err != nil {
 		return "", shared.ErrUserWrongEmailOrPassword
 	}
 
@@ -51,33 +50,18 @@ func (a AuthService) Create(ctx context.Context, signInData models.UserSignIn) e
 		return shared.ErrDefaultInternal
 	}
 
-	salt, err := generateSalt()
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(signInData.Password), bcrypt.MinCost)
 	if err != nil {
 		return err
 	}
-	hashedPassword := createHashedPassword(salt, signInData.Password)
 
 	userRecord := &models.UserRecord{
-		Email:        signInData.Email,
-		Name:         signInData.Name,
-		HashPassword: hashedPassword,
-		Salt:         salt,
+		User: models.User{
+			Name:  signInData.Name,
+			Email: signInData.Email,
+		},
+		HashPassword: string(hashedPassword),
 	}
 
 	return a.userRepository.Create(ctx, userRecord)
-}
-
-func createHashedPassword(salt, password string) string {
-	hasher := sha256.New()
-	hasher.Write([]byte(password + salt))
-	return hex.EncodeToString(hasher.Sum(nil))
-}
-
-func generateSalt() (string, error) {
-	salt := make([]byte, 16)
-	_, err := rand.Read(salt)
-	if err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(salt), nil
 }

@@ -16,7 +16,7 @@ import (
 
 type mockUserAuthService struct{}
 
-func (m *mockUserAuthService) Create(ctx context.Context, signInData models.UserSignIn) error {
+func (m *mockUserAuthService) Create(ctx context.Context, signInData models.UserAuthInput) error {
 	if signInData.Email == "existing@example.com" {
 		return shared.ErrUserWithEmailExist
 	}
@@ -26,7 +26,7 @@ func (m *mockUserAuthService) Create(ctx context.Context, signInData models.User
 	return nil
 }
 
-func (m *mockUserAuthService) LogIn(ctx context.Context, signInData models.UserLogIn) (string, error) {
+func (m *mockUserAuthService) LogIn(ctx context.Context, signInData models.UserAuthInput) (string, error) {
 	if signInData.Email == "existing@example.com" && signInData.Password == "password" {
 		return "token", nil
 	}

@@ -30,7 +30,7 @@ func getAuthUserService(t *testing.T) (*services.AuthService, func()) {
 	authService := services.NewAuthService(userRepository)
 
 	// Test case 2: User with the same email does not exist
-	err = authService.Create(context.Background(), models.UserSignIn{
+	err = authService.Create(context.Background(), models.UserAuthInput{
 		Email:    "existing@example.com",
 		Password: "password",
 		Name:     "Test User",
@@ -52,7 +52,7 @@ func TestAuthService_Validate(t *testing.T) {
 	defer close()
 
 	// Test case 1: Valid login credentials
-	token, err := authService.LogIn(context.Background(), models.UserLogIn{
+	token, err := authService.LogIn(context.Background(), models.UserAuthInput{
 		Email:    "existing@example.com",
 		Password: "password",
 	})
@@ -65,7 +65,7 @@ func TestAuthService_Validate(t *testing.T) {
 	}
 
 	// Test case 2: Invalid email credentials
-	token, err = authService.LogIn(context.Background(), models.UserLogIn{
+	token, err = authService.LogIn(context.Background(), models.UserAuthInput{
 		Email:    "nonexisting@example.com",
 		Password: "password",
 	})
@@ -77,7 +77,7 @@ func TestAuthService_Validate(t *testing.T) {
 	}
 
 	// Test case 2: Invalid login credentials
-	token, err = authService.LogIn(context.Background(), models.UserLogIn{
+	token, err = authService.LogIn(context.Background(), models.UserAuthInput{
 		Email:    "existing@example.com",
 		Password: "wrong",
 	})
@@ -94,7 +94,7 @@ func TestAuthService_Create(t *testing.T) {
 	defer close()
 
 	// Test case 1: User with the same email already exists
-	err := authService.Create(context.Background(), models.UserSignIn{
+	err := authService.Create(context.Background(), models.UserAuthInput{
 		Email:    "existing@example.com",
 		Password: "password",
 		Name:     "New User",
@@ -104,7 +104,7 @@ func TestAuthService_Create(t *testing.T) {
 	}
 
 	// Test case 2: User with the same email does not exist
-	err = authService.Create(context.Background(), models.UserSignIn{
+	err = authService.Create(context.Background(), models.UserAuthInput{
 		Email:    "new@example.com",
 		Password: "password",
 		Name:     "New User",

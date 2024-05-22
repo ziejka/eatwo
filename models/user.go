@@ -13,16 +13,13 @@ type UserLogIn struct {
 }
 
 type UserSignIn struct {
-	Email    string `form:"email"`
-	Name     string `form:"name"`
-	Password string `form:"password"`
+	UserLogIn
+	Name string `form:"name"`
 }
 
 type UserRecord struct {
-	Email        string `form:"email"`
-	Name         string `form:"name"`
+	User
 	HashPassword string `form:"hash_password"`
-	Salt         string `form:"salt"`
 }
 
 type Claims struct {
