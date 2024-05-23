@@ -10,8 +10,6 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	gLog "github.com/labstack/gommon/log"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -41,13 +39,11 @@ func main() {
 	e := echo.New()
 	defer e.Close()
 
-	e.Use(middleware.Logger())
-	e.Logger.SetLevel(gLog.DEBUG)
-
-	// e.Use(echojwt.JWT(os.Getenv("JWT_SECRET")))
+	// e.Use(middleware.Logger())
+	// e.Logger.SetLevel(gLog.DEBUG)
 
 	e.Static("/", "assets")
-	handlers.SetRoutes(e, userAuthService)
+	handlers.SetRoutes(e, userAuthService, services.GenerateToken, services.ParseToken)
 
 	e.Logger.Fatal(e.Start("127.0.0.1:8080"))
 }

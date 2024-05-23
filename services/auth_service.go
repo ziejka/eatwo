@@ -24,35 +24,35 @@ func NewAuthService(userRepository UserRepository) *AuthService {
 	}
 }
 
-func (a AuthService) LogIn(ctx context.Context, logInData models.UserLogIn) (string, error) {
+func (a AuthService) Validate(ctx context.Context, logInData models.UserLogIn) (models.User, error) {
 	user, err := a.userRepository.GetByEmail(ctx, logInData.Email)
 	if err != nil {
 		if errors.Is(err, shared.ErrNotExists) {
-			return "", shared.ErrUserWrongEmailOrPassword
+			return models.User{}, shared.ErrUserWrongEmailOrPassword
 		}
-		return "", err
+		return models.User{}, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.HashPassword), []byte(logInData.Password))
 	if err != nil {
-		return "", shared.ErrUserWrongEmailOrPassword
+		return models.User{}, shared.ErrUserWrongEmailOrPassword
 	}
 
-	return generateToken(*user)
+	return user.User, nil
 }
 
-func (a AuthService) Create(ctx context.Context, signInData models.UserSignIn) error {
+func (a AuthService) Create(ctx context.Context, signInData models.UserSignIn) (models.User, error) {
 	_, err := a.userRepository.GetByEmail(ctx, signInData.Email)
 	if err == nil {
-		return shared.ErrUserWithEmailExist
+		return models.User{}, shared.ErrUserWithEmailExist
 	}
 	if !errors.Is(err, shared.ErrNotExists) {
-		return shared.ErrDefaultInternal
+		return models.User{}, shared.ErrDefaultInternal
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(signInData.Password), bcrypt.MinCost)
 	if err != nil {
-		return err
+		return models.User{}, err
 	}
 
 	userRecord := &models.UserRecord{
@@ -63,5 +63,9 @@ func (a AuthService) Create(ctx context.Context, signInData models.UserSignIn) e
 		HashPassword: string(hashedPassword),
 	}
 
-	return a.userRepository.Create(ctx, userRecord)
+	if err = a.userRepository.Create(ctx, userRecord); err != nil {
+		return models.User{}, err
+	}
+
+	return userRecord.User, nil
 }

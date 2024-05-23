@@ -5,6 +5,7 @@ import (
 	"eatwo/handlers"
 	"eatwo/models"
 	"eatwo/shared"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -16,24 +17,36 @@ import (
 
 type mockUserAuthService struct{}
 
-func (m *mockUserAuthService) Create(ctx context.Context, signInData models.UserAuthInput) error {
+func (m *mockUserAuthService) Create(ctx context.Context, signInData models.UserSignIn) (models.User, error) {
 	if signInData.Email == "existing@example.com" {
-		return shared.ErrUserWithEmailExist
+		return models.User{}, shared.ErrUserWithEmailExist
 	}
 	if signInData.Password == "InternalError" {
-		return shared.ErrDefaultInternal
+		return models.User{}, shared.ErrDefaultInternal
 	}
-	return nil
+	return models.User{
+		Email: signInData.Email,
+		Name:  signInData.Name,
+	}, nil
 }
 
-func (m *mockUserAuthService) LogIn(ctx context.Context, signInData models.UserAuthInput) (string, error) {
-	if signInData.Email == "existing@example.com" && signInData.Password == "password" {
-		return "token", nil
+func (m *mockUserAuthService) Validate(ctx context.Context, logInData models.UserLogIn) (models.User, error) {
+	if logInData.Email == "existing@example.com" && logInData.Password == "password" {
+		return models.User{
+			Email: logInData.Email,
+		}, nil
 	}
-	if signInData.Password == "InternalError" {
-		return "", shared.ErrDefaultInternal
+	if logInData.Password == "InternalError" {
+		return models.User{}, shared.ErrDefaultInternal
 	}
-	return "", shared.ErrUserWrongEmailOrPassword
+	return models.User{}, shared.ErrUserWrongEmailOrPassword
+}
+
+func generateTokenMock(user models.User) (string, error) {
+	if user.Email == "invalid" {
+		return "", fmt.Errorf("Error")
+	}
+	return "token", nil
 }
 
 func TestAuthHandler_LogInPostHandler(t *testing.T) {
@@ -46,7 +59,7 @@ func TestAuthHandler_LogInPostHandler(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	handler := handlers.NewAuthHandler(&mockUserAuthService{})
+	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
 	err := handler.LogInPostHandler(c)
 
 	if err != nil {
@@ -78,7 +91,7 @@ func TestAuthHandler_LogInPostHandler_WrongEmailOrPassword(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	handler := handlers.NewAuthHandler(&mockUserAuthService{})
+	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
 	err := handler.LogInPostHandler(c)
 
 	if err.Error() != "code=401, message=wrong email or password" {
@@ -96,7 +109,7 @@ func TestAuthHandler_LogInPostHandler_InternalServerError(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	handler := handlers.NewAuthHandler(&mockUserAuthService{})
+	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
 	err := handler.LogInPostHandler(c)
 
 	if err.Error() != "code=500, message=something went wrong please try again" {
@@ -111,7 +124,7 @@ func TestAuthHandler_SignInPostHandler(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	handler := handlers.NewAuthHandler(&mockUserAuthService{})
+	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
 	err := handler.SignInPostHandler(c)
 
 	if err != nil {
@@ -135,7 +148,7 @@ func TestAuthHandler_SignInPostHandler_UserWithEmailExist(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	handler := handlers.NewAuthHandler(&mockUserAuthService{})
+	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
 	err := handler.SignInPostHandler(c)
 
 	if err.Error() != "code=409, message=User with such email already exist" {
@@ -150,7 +163,7 @@ func TestAuthHandler_SignInPostHandler_InternalServerError(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	handler := handlers.NewAuthHandler(&mockUserAuthService{})
+	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
 	err := handler.SignInPostHandler(c)
 
 	if err.Error() != "code=500, message=Could not create user" {

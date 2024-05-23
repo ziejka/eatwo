@@ -8,9 +8,9 @@ templ passwordForm(authType string) {
 	<div id="auth-error" class="hidden"></div>
 	<form
 		hx-post={ string(templ.URL(fmt.Sprintf("/api/v1/%s", authType))) }
-		hx-swap="outerHTML"
 		hx-indicator="#loading-overlay"
 		class="grid gap-2 w-80 mx-auto"
+		hx-target="#main"
 	>
 		<div class="grid">
 			<label for="email">Email</label>

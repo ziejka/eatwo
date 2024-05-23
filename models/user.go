@@ -1,7 +1,5 @@
 package models
 
-import "github.com/golang-jwt/jwt"
-
 type User struct {
 	Email string `form:"email"`
 	Name  string `form:"name"`
@@ -23,6 +21,5 @@ type UserRecord struct {
 }
 
 type Claims struct {
-	Role string `json:"role"`
-	jwt.StandardClaims
+	Name string
 }

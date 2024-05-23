@@ -1,10 +1,18 @@
 package handlers
 
-import "github.com/labstack/echo/v4"
+import (
+	"eatwo/models"
 
-func SetRoutes(e *echo.Echo, userAuthService UserAuthService) {
-	homeHandler := Home{}
-	authHandler := NewAuthHandler(userAuthService)
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/labstack/echo/v4"
+)
+
+type TokenGenerator func(user models.User) (string, error)
+type TokenParser func(tokenString string) (*jwt.RegisteredClaims, error)
+
+func SetRoutes(e *echo.Echo, userAuthService UserAuthService, tokenGenerator TokenGenerator, tokenParser TokenParser) {
+	homeHandler := NewHome(tokenParser)
+	authHandler := NewAuthHandler(userAuthService, tokenGenerator)
 
 	// home routes
 	e.GET("/", homeHandler.GetHome)

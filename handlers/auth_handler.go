@@ -12,17 +12,19 @@ import (
 )
 
 type UserAuthService interface {
-	Create(ctx context.Context, signInData models.UserSignIn) error
-	LogIn(ctx context.Context, signInData models.UserLogIn) (string, error)
+	Create(ctx context.Context, signInData models.UserSignIn) (models.User, error)
+	Validate(ctx context.Context, logInData models.UserLogIn) (models.User, error)
 }
 
 type AuthHandler struct {
 	userAuthService UserAuthService
+	generateToken   TokenGenerator
 }
 
-func NewAuthHandler(userAuthService UserAuthService) *AuthHandler {
+func NewAuthHandler(userAuthService UserAuthService, tokenGenerator TokenGenerator) *AuthHandler {
 	return &AuthHandler{
-		userAuthService: userAuthService,
+		userAuthService,
+		tokenGenerator,
 	}
 }
 
@@ -30,21 +32,31 @@ func (a AuthHandler) LogInPostHandler(c echo.Context) error {
 	var logInData models.UserLogIn
 	if err := c.Bind(&logInData); err != nil {
 		c.Logger().Error(err.Error())
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
+		return a.error(c, http.StatusBadRequest, "Invalid input")
 	}
 
-	token, err := a.userAuthService.LogIn(c.Request().Context(), logInData)
+	user, err := a.userAuthService.Validate(c.Request().Context(), logInData)
 	if err != nil {
 		if errors.Is(err, shared.ErrUserWrongEmailOrPassword) {
-			c.Response().Header().Set("HX-Retarget", "#auth-error")
-			return render(c, http.StatusUnauthorized, pages.AuthError("Wrong email or password"))
+			return a.error(c, http.StatusUnauthorized, "Wrong email or password")
 		}
-		c.Response().Header().Set("HX-Retarget", "#auth-error")
-		return render(c, http.StatusUnauthorized, pages.AuthError("something went wrong please try again"))
+		return a.error(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
 
-	c.Response().Header().Set("Authorization", "Bearer "+token)
-	return c.String(http.StatusOK, "Logged in successfully")
+	token, err := a.generateToken(user)
+	if err != nil {
+		return a.error(c, http.StatusUnauthorized, "something went wrong please try again")
+	}
+
+	cookie := &http.Cookie{
+		Name:     "token",
+		Value:    token,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+	}
+	c.SetCookie(cookie)
+	return render(c, http.StatusOK, pages.HomePage(user.Email))
 }
 
 func (a AuthHandler) SignInPostHandler(c echo.Context) error {
@@ -54,17 +66,37 @@ func (a AuthHandler) SignInPostHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
 	}
 
-	err := a.userAuthService.Create(c.Request().Context(), signInData)
+	user, err := a.userAuthService.Create(c.Request().Context(), signInData)
 	if err != nil {
 		c.Logger().Error(err.Error())
+		c.Response().Header().Set("HX-Swap", "outerHTML")
+		c.Response().Header().Set("HX-Retarget", "#auth-error")
+
 		if errors.Is(err, shared.ErrUserWithEmailExist) {
-			c.Response().Header().Set("HX-Retarget", "#auth-error")
 			return render(c, http.StatusUnauthorized, pages.AuthError("User with that email already exist"))
 		}
-		c.Response().Header().Set("HX-Retarget", "#auth-error")
 		return render(c, http.StatusUnauthorized, pages.AuthError("Could not create user"))
 	}
 
 	// TODO Redirect to homepage
-	return c.String(http.StatusCreated, "user created")
+	token, err := a.generateToken(user)
+	if err != nil {
+		return a.error(c, http.StatusUnauthorized, "something went wrong please try again")
+	}
+
+	cookie := &http.Cookie{
+		Name:     "token",
+		Value:    token,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+	}
+	c.SetCookie(cookie)
+	return render(c, http.StatusOK, pages.HomePage(user.Email))
+}
+
+func (a AuthHandler) error(c echo.Context, statusCode int, message string) error {
+	c.Response().Header().Set("HX-Retarget", "#auth-error")
+	c.Response().Header().Set("HX-Reswap", "outerHTML")
+	return render(c, statusCode, pages.AuthError(message))
 }

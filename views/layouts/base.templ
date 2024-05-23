@@ -15,7 +15,7 @@ templ Base(children ...templ.Component) {
 					<a href="/signin">Sign In</a>
 				</nav>
 			</header>
-			<main class="p-4">
+			<main id="main" class="p-4">
 				for _, child := range children {
 					@child
 				}
