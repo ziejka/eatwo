@@ -30,10 +30,12 @@ func getAuthUserService(t *testing.T) (*services.AuthService, func()) {
 	authService := services.NewAuthService(userRepository)
 
 	// Test case 2: User with the same email does not exist
-	err = authService.Create(context.Background(), models.UserAuthInput{
-		Email:    "existing@example.com",
-		Password: "password",
-		Name:     "Test User",
+	_, err = authService.Create(context.Background(), models.UserSignIn{
+		UserLogIn: models.UserLogIn{
+			Email:    "existing@example.com",
+			Password: "password",
+		},
+		Name: "Test User",
 	})
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
@@ -52,7 +54,7 @@ func TestAuthService_Validate(t *testing.T) {
 	defer close()
 
 	// Test case 1: Valid login credentials
-	token, err := authService.LogIn(context.Background(), models.UserAuthInput{
+	_, err := authService.Validate(context.Background(), models.UserLogIn{
 		Email:    "existing@example.com",
 		Password: "password",
 	})
@@ -60,32 +62,22 @@ func TestAuthService_Validate(t *testing.T) {
 		t.Errorf("Expected no error, but got: %v", err)
 	}
 
-	if token == "" {
-		t.Errorf("Expected token to exist")
-	}
-
 	// Test case 2: Invalid email credentials
-	token, err = authService.LogIn(context.Background(), models.UserAuthInput{
+	_, err = authService.Validate(context.Background(), models.UserLogIn{
 		Email:    "nonexisting@example.com",
 		Password: "password",
 	})
 	if err != shared.ErrUserWrongEmailOrPassword {
 		t.Errorf("Expected ErrUserWrongEmailOrPassword, but got: %v", err)
 	}
-	if token != "" {
-		t.Errorf("Expected token to exist be empty")
-	}
 
 	// Test case 2: Invalid login credentials
-	token, err = authService.LogIn(context.Background(), models.UserAuthInput{
+	_, err = authService.Validate(context.Background(), models.UserLogIn{
 		Email:    "existing@example.com",
 		Password: "wrong",
 	})
 	if err != shared.ErrUserWrongEmailOrPassword {
 		t.Errorf("Expected ErrUserWrongEmailOrPassword, but got: %v", err)
-	}
-	if token != "" {
-		t.Errorf("Expected token to exist be empty")
 	}
 }
 
@@ -94,20 +86,24 @@ func TestAuthService_Create(t *testing.T) {
 	defer close()
 
 	// Test case 1: User with the same email already exists
-	err := authService.Create(context.Background(), models.UserAuthInput{
-		Email:    "existing@example.com",
-		Password: "password",
-		Name:     "New User",
+	_, err := authService.Create(context.Background(), models.UserSignIn{
+		UserLogIn: models.UserLogIn{
+			Email:    "existing@example.com",
+			Password: "password",
+		},
+		Name: "New User",
 	})
 	if err != shared.ErrUserWithEmailExist {
 		t.Errorf("Expected ErrUserWithEmailExist, but got: %v", err)
 	}
 
 	// Test case 2: User with the same email does not exist
-	err = authService.Create(context.Background(), models.UserAuthInput{
-		Email:    "new@example.com",
-		Password: "password",
-		Name:     "New User",
+	_, err = authService.Create(context.Background(), models.UserSignIn{
+		UserLogIn: models.UserLogIn{
+			Email:    "new@example.com",
+			Password: "password",
+		},
+		Name: "New User",
 	})
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)

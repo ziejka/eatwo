@@ -1,10 +1,12 @@
 package handlers_test
 
 import (
+	"bytes"
 	"context"
 	"eatwo/handlers"
 	"eatwo/models"
 	"eatwo/shared"
+	"eatwo/views/pages"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -70,14 +72,18 @@ func TestAuthHandler_LogInPostHandler(t *testing.T) {
 		t.Errorf("Expected status code %d, but got: %d", http.StatusOK, rec.Code)
 	}
 
-	expectedToken := "Bearer token"
-	if rec.Header().Get("Authorization") != expectedToken {
-		t.Errorf("Expected Authorization header to be %s, but got: %s", expectedToken, rec.Header().Get("Authorization"))
+	expectedCookieName := "token"
+	cookie := rec.Header().Get("Set-Cookie")
+	if !strings.Contains(cookie, expectedCookieName) {
+		t.Errorf("Expected Set-Cookie header to contain %s, but got: %s", expectedCookieName, cookie)
 	}
 
-	expectedBody := "Logged in successfully"
-	if rec.Body.String() != expectedBody {
-		t.Errorf("Expected response body to be %s, but got: %s", expectedBody, rec.Body.String())
+	var buf bytes.Buffer
+	pages.HomePage("existing@example.com").Render(req.Context(), &buf)
+	expectedBody := buf.String()
+	body := rec.Body.String()
+	if !strings.Contains(body, expectedBody) {
+		t.Errorf("Expected response body to contain %s, but got: %s", expectedBody, body)
 	}
 }
 
@@ -94,8 +100,20 @@ func TestAuthHandler_LogInPostHandler_WrongEmailOrPassword(t *testing.T) {
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
 	err := handler.LogInPostHandler(c)
 
-	if err.Error() != "code=401, message=wrong email or password" {
-		t.Errorf("Expected %+v, but got: %+v", echo.NewHTTPError(http.StatusUnauthorized, "wrong email or password"), err)
+	if err != nil {
+		t.Errorf("Expected no error, but got: %v", err)
+	}
+
+	if rec.Code != http.StatusUnauthorized {
+		t.Errorf("Expected status code %d, but got: %d", http.StatusOK, rec.Code)
+	}
+
+	var buf bytes.Buffer
+	pages.AuthError("Wrong email or password").Render(req.Context(), &buf)
+	expectedBody := buf.String()
+	body := rec.Body.String()
+	if !strings.Contains(body, expectedBody) {
+		t.Errorf("Expected response body to contain %s, but got: %s", expectedBody, body)
 	}
 }
 
@@ -112,8 +130,20 @@ func TestAuthHandler_LogInPostHandler_InternalServerError(t *testing.T) {
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
 	err := handler.LogInPostHandler(c)
 
-	if err.Error() != "code=500, message=something went wrong please try again" {
+	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
+	}
+
+	if rec.Code != http.StatusUnauthorized {
+		t.Errorf("Expected status code %d, but got: %d", http.StatusOK, rec.Code)
+	}
+
+	var buf bytes.Buffer
+	pages.AuthError("something went wrong please try again").Render(req.Context(), &buf)
+	expectedBody := buf.String()
+	body := rec.Body.String()
+	if !strings.Contains(body, expectedBody) {
+		t.Errorf("Expected response body to contain %s, but got: %s", expectedBody, body)
 	}
 }
 
@@ -135,9 +165,12 @@ func TestAuthHandler_SignInPostHandler(t *testing.T) {
 		t.Errorf("Expected status code %d, but got: %d", http.StatusCreated, rec.Code)
 	}
 
-	expectedBody := "user created"
-	if rec.Body.String() != expectedBody {
-		t.Errorf("Expected response body to be %s, but got: %s", expectedBody, rec.Body.String())
+	var buf bytes.Buffer
+	pages.HomePage("new@example.com").Render(req.Context(), &buf)
+	expectedBody := buf.String()
+	body := rec.Body.String()
+	if !strings.Contains(body, expectedBody) {
+		t.Errorf("Expected response body to contain %s, but got: %s", expectedBody, body)
 	}
 }
 
@@ -151,8 +184,20 @@ func TestAuthHandler_SignInPostHandler_UserWithEmailExist(t *testing.T) {
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
 	err := handler.SignInPostHandler(c)
 
-	if err.Error() != "code=409, message=User with such email already exist" {
+	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
+	}
+
+	if rec.Code != http.StatusUnauthorized {
+		t.Errorf("Expected status code %d, but got: %d", http.StatusUnauthorized, rec.Code)
+	}
+
+	var buf bytes.Buffer
+	pages.AuthError("User with that email already exist").Render(req.Context(), &buf)
+	expectedBody := buf.String()
+	body := rec.Body.String()
+	if !strings.Contains(body, expectedBody) {
+		t.Errorf("Expected response body to contain %s, but got: %s", expectedBody, body)
 	}
 }
 
@@ -166,7 +211,19 @@ func TestAuthHandler_SignInPostHandler_InternalServerError(t *testing.T) {
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
 	err := handler.SignInPostHandler(c)
 
-	if err.Error() != "code=500, message=Could not create user" {
+	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
+	}
+
+	if rec.Code != http.StatusUnauthorized {
+		t.Errorf("Expected status code %d, but got: %d", http.StatusUnauthorized, rec.Code)
+	}
+
+	var buf bytes.Buffer
+	pages.AuthError("Could not create user").Render(req.Context(), &buf)
+	expectedBody := buf.String()
+	body := rec.Body.String()
+	if !strings.Contains(body, expectedBody) {
+		t.Errorf("Expected response body to contain %s, but got: %s", expectedBody, body)
 	}
 }

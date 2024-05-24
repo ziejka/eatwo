@@ -69,13 +69,11 @@ func (a AuthHandler) SignInPostHandler(c echo.Context) error {
 	user, err := a.userAuthService.Create(c.Request().Context(), signInData)
 	if err != nil {
 		c.Logger().Error(err.Error())
-		c.Response().Header().Set("HX-Swap", "outerHTML")
-		c.Response().Header().Set("HX-Retarget", "#auth-error")
 
 		if errors.Is(err, shared.ErrUserWithEmailExist) {
-			return render(c, http.StatusUnauthorized, pages.AuthError("User with that email already exist"))
+			return a.error(c, http.StatusUnauthorized, "User with that email already exist")
 		}
-		return render(c, http.StatusUnauthorized, pages.AuthError("Could not create user"))
+		return a.error(c, http.StatusUnauthorized, "Could not create user")
 	}
 
 	// TODO Redirect to homepage
@@ -92,7 +90,7 @@ func (a AuthHandler) SignInPostHandler(c echo.Context) error {
 		HttpOnly: true,
 	}
 	c.SetCookie(cookie)
-	return render(c, http.StatusOK, pages.HomePage(user.Email))
+	return render(c, http.StatusCreated, pages.HomePage(user.Email))
 }
 
 func (a AuthHandler) error(c echo.Context, statusCode int, message string) error {
