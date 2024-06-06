@@ -25,15 +25,18 @@ templ passwordForm(authType string) {
 }
 
 templ LoginPage() {
-	<h1>Log In page</h1>
+	<h1 class="text-xl text-center">Log In page</h1>
 	@passwordForm("login")
 }
 
 templ SignInPage() {
-	<h1>Sign In page</h1>
+	<h1 class="text-xl text-center">Sign In page</h1>
 	@passwordForm("signin")
 }
 
 templ AuthError(message string) {
 	<p id="auth-error" class="text-red-500">{ message }</p>
+}
+
+templ Empty() {
 }

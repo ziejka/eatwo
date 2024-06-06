@@ -1,5 +1,22 @@
 package pages
 
+import "eatwo/views/layouts"
+
 templ HomePage(name string) {
-	<h1 class="text-gray-900 text-4xl font-bold">This is homepage {name}</h1>
+	if name == "" {
+		<h1 class="text-gray-900 text-4xl font-bold">Public homepage</h1>
+	} else {
+		<h1 class="text-gray-900 text-4xl font-bold">Protected homepage user: { name }</h1>
+	}
+}
+
+templ HomePageWithNavigation(name string) {
+	if name == "" {
+		@layouts.UnlogNavigation()
+	} else {
+		@layouts.LoggedNavigation()
+	}
+	<main id="main" class="p-4" hx-swap-oob="true">
+		@HomePage(name)
+	</main>
 }

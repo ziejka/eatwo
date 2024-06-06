@@ -22,4 +22,5 @@ func SetRoutes(e *echo.Echo, userAuthService UserAuthService, tokenGenerator Tok
 	// api
 	e.POST("/api/v1/signin", authHandler.SignInPostHandler)
 	e.POST("/api/v1/login", authHandler.LogInPostHandler)
+	e.POST("/api/v1/logout", authHandler.Logout)
 }

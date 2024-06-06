@@ -1,6 +1,8 @@
 package layouts
 
-templ Base(children ...templ.Component) {
+import "github.com/golang-jwt/jwt/v5"
+
+templ Base(claims *jwt.RegisteredClaims, children ...templ.Component) {
 	<html>
 		<head>
 			<title>Templ + HTMX + Tailwind</title>
@@ -9,11 +11,11 @@ templ Base(children ...templ.Component) {
 		</head>
 		<body class="bg-slate-200 text-slate-800">
 			<header class="p-4">
-				<nav>
-					<a href="/">Home</a>
-					<a href="/login">Log In</a>
-					<a href="/signin">Sign In</a>
-				</nav>
+				if claims == nil {
+					@UnlogNavigation()
+				} else {
+					@LoggedNavigation()
+				}
 			</header>
 			<main id="main" class="p-4">
 				for _, child := range children {
@@ -23,4 +25,24 @@ templ Base(children ...templ.Component) {
 		</body>
 		<script src="/js/index.js"></script>
 	</html>
+}
+
+templ Navigation() {
+	<nav id="nav" class="flex gap-4 py-2" hx-swap-oob="true">
+		<a hx-target="#main" hx-get="/">Home</a>
+		{ children... }
+	</nav>
+}
+
+templ UnlogNavigation() {
+	@Navigation() {
+		<a hx-target="#main" hx-get="/login">Log In</a>
+		<a hx-target="#main" hx-get="/signin">Sign In</a>
+	}
+}
+
+templ LoggedNavigation() {
+	@Navigation() {
+		<a hx-target="#main" hx-post="/api/v1/logout">Logout</a>
+	}
 }

@@ -28,6 +28,21 @@ func NewAuthHandler(userAuthService UserAuthService, tokenGenerator TokenGenerat
 	}
 }
 
+func (a AuthHandler) Logout(c echo.Context) error {
+	// Old token should be stored in some key-value and check if it was logged out
+	cookie := &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		MaxAge:   -1,
+	}
+
+	c.SetCookie(cookie)
+	return render(c, http.StatusOK, pages.HomePageWithNavigation(""))
+}
+
 func (a AuthHandler) LogInPostHandler(c echo.Context) error {
 	var logInData models.UserLogIn
 	if err := c.Bind(&logInData); err != nil {
@@ -43,20 +58,11 @@ func (a AuthHandler) LogInPostHandler(c echo.Context) error {
 		return a.error(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
 
-	token, err := a.generateToken(user)
+	err = a.setTokenCookie(c, user)
 	if err != nil {
 		return a.error(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
-
-	cookie := &http.Cookie{
-		Name:     "token",
-		Value:    token,
-		Path:     "/",
-		Secure:   true,
-		HttpOnly: true,
-	}
-	c.SetCookie(cookie)
-	return render(c, http.StatusOK, pages.HomePage(user.Email))
+	return render(c, http.StatusOK, pages.HomePageWithNavigation(user.Email))
 }
 
 func (a AuthHandler) SignInPostHandler(c echo.Context) error {
@@ -76,10 +82,18 @@ func (a AuthHandler) SignInPostHandler(c echo.Context) error {
 		return a.error(c, http.StatusUnauthorized, "Could not create user")
 	}
 
-	// TODO Redirect to homepage
-	token, err := a.generateToken(user)
+	err = a.setTokenCookie(c, user)
 	if err != nil {
 		return a.error(c, http.StatusUnauthorized, "something went wrong please try again")
+	}
+
+	return render(c, http.StatusOK, pages.HomePageWithNavigation(user.Email))
+}
+
+func (a AuthHandler) setTokenCookie(c echo.Context, user models.User) error {
+	token, err := a.generateToken(user)
+	if err != nil {
+		return err
 	}
 
 	cookie := &http.Cookie{
@@ -90,7 +104,8 @@ func (a AuthHandler) SignInPostHandler(c echo.Context) error {
 		HttpOnly: true,
 	}
 	c.SetCookie(cookie)
-	return render(c, http.StatusCreated, pages.HomePage(user.Email))
+
+	return nil
 }
 
 func (a AuthHandler) error(c echo.Context, statusCode int, message string) error {
