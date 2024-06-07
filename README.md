@@ -1,6 +1,6 @@
-# This is PoC and test app for eatwo app
+# This is Go + HTMX app
 
-Proposed folder structrure
+Proposed folder structure
 
 ```
 /myapp
