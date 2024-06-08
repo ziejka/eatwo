@@ -19,7 +19,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func (r UserRepository) GetByEmail(ctx context.Context, email string) (*models.UserRecord, error) {
+func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*models.UserRecord, error) {
 	rows := r.db.QueryRow("SELECT * FROM users WHERE email = ?", email)
 	var user models.UserRecord
 
@@ -33,7 +33,7 @@ func (r UserRepository) GetByEmail(ctx context.Context, email string) (*models.U
 	return &user, nil
 }
 
-func (r UserRepository) Create(ctx context.Context, user *models.UserRecord) error {
+func (r *UserRepository) Create(ctx context.Context, user *models.UserRecord) error {
 	_, err := r.db.ExecContext(ctx, "INSERT INTO users (email, name, hash_password) VALUES (?, ?, ?)",
 		user.Email, user.Name, user.HashPassword)
 
@@ -44,8 +44,8 @@ func (r UserRepository) Create(ctx context.Context, user *models.UserRecord) err
 	return nil
 }
 
-func (r UserRepository) Migrate(ctx context.Context) error {
-	_, err := r.db.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS users(
+func (r *UserRepository) Migrate(ctx context.Context) error {
+	_, err := r.db.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS users (
 		email TEXT PRIMARY KEY,
 		name TEXT NOT NULL,
 		hash_password TEXT NOT NULL

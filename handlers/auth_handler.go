@@ -28,7 +28,7 @@ func NewAuthHandler(userAuthService UserAuthService, tokenGenerator TokenGenerat
 	}
 }
 
-func (a AuthHandler) Logout(c echo.Context) error {
+func (a *AuthHandler) Logout(c echo.Context) error {
 	// Old token should be stored in some key-value and check if it was logged out
 	cookie := &http.Cookie{
 		Name:     "token",
@@ -43,7 +43,7 @@ func (a AuthHandler) Logout(c echo.Context) error {
 	return render(c, http.StatusOK, pages.HomePageWithNavigation(""))
 }
 
-func (a AuthHandler) LogInPostHandler(c echo.Context) error {
+func (a *AuthHandler) LogInPostHandler(c echo.Context) error {
 	var logInData models.UserLogIn
 	if err := c.Bind(&logInData); err != nil {
 		c.Logger().Error(err.Error())
@@ -65,7 +65,7 @@ func (a AuthHandler) LogInPostHandler(c echo.Context) error {
 	return render(c, http.StatusOK, pages.HomePageWithNavigation(user.Email))
 }
 
-func (a AuthHandler) SignInPostHandler(c echo.Context) error {
+func (a *AuthHandler) SignInPostHandler(c echo.Context) error {
 	var signInData models.UserSignIn
 	if err := c.Bind(&signInData); err != nil {
 		c.Logger().Error(err.Error())
@@ -87,10 +87,10 @@ func (a AuthHandler) SignInPostHandler(c echo.Context) error {
 		return a.error(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
 
-	return render(c, http.StatusOK, pages.HomePageWithNavigation(user.Email))
+	return render(c, http.StatusCreated, pages.HomePageWithNavigation(user.Email))
 }
 
-func (a AuthHandler) setTokenCookie(c echo.Context, user models.User) error {
+func (a *AuthHandler) setTokenCookie(c echo.Context, user models.User) error {
 	token, err := a.generateToken(user)
 	if err != nil {
 		return err
@@ -108,7 +108,7 @@ func (a AuthHandler) setTokenCookie(c echo.Context, user models.User) error {
 	return nil
 }
 
-func (a AuthHandler) error(c echo.Context, statusCode int, message string) error {
+func (a *AuthHandler) error(c echo.Context, statusCode int, message string) error {
 	c.Response().Header().Set("HX-Retarget", "#auth-error")
 	c.Response().Header().Set("HX-Reswap", "outerHTML")
 	return render(c, statusCode, pages.AuthError(message))

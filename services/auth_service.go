@@ -24,7 +24,7 @@ func NewAuthService(userRepository UserRepository) *AuthService {
 	}
 }
 
-func (a AuthService) Validate(ctx context.Context, logInData models.UserLogIn) (models.User, error) {
+func (a *AuthService) Validate(ctx context.Context, logInData models.UserLogIn) (models.User, error) {
 	user, err := a.userRepository.GetByEmail(ctx, logInData.Email)
 	if err != nil {
 		if errors.Is(err, shared.ErrNotExists) {
@@ -41,7 +41,7 @@ func (a AuthService) Validate(ctx context.Context, logInData models.UserLogIn) (
 	return user.User, nil
 }
 
-func (a AuthService) Create(ctx context.Context, signInData models.UserSignIn) (models.User, error) {
+func (a *AuthService) Create(ctx context.Context, signInData models.UserSignIn) (models.User, error) {
 	_, err := a.userRepository.GetByEmail(ctx, signInData.Email)
 	if err == nil {
 		return models.User{}, shared.ErrUserWithEmailExist
