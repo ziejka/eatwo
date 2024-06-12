@@ -6,6 +6,7 @@ import (
 	"eatwo/shared"
 	"errors"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -56,6 +57,7 @@ func (a *AuthService) Create(ctx context.Context, signInData models.UserSignIn) 
 	}
 
 	userRecord := &models.UserRecord{
+		ID: uuid.NewString(),
 		User: models.User{
 			Name:  signInData.Name,
 			Email: signInData.Email,

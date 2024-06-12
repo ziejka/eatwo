@@ -17,6 +17,7 @@ type UserSignIn struct {
 
 type UserRecord struct {
 	User
+	ID           string `form:"id"`
 	HashPassword string `form:"hash_password"`
 }
 
