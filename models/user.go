@@ -1,6 +1,7 @@
 package models
 
 type User struct {
+	ID    string `form:"id"`
 	Email string `form:"email"`
 	Name  string `form:"name"`
 }
@@ -17,7 +18,6 @@ type UserSignIn struct {
 
 type UserRecord struct {
 	User
-	ID           string `form:"id"`
 	HashPassword string `form:"hash_password"`
 }
 

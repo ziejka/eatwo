@@ -1,8 +1,8 @@
 package layouts
 
-import "github.com/golang-jwt/jwt/v5"
+import "eatwo/services"
 
-templ Base(claims *jwt.RegisteredClaims, children ...templ.Component) {
+templ Base(claims *services.CustomClaims, children ...templ.Component) {
 	<html>
 		<head>
 			<title>Templ + HTMX + Tailwind</title>

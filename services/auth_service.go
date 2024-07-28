@@ -57,8 +57,8 @@ func (a *AuthService) Create(ctx context.Context, signInData models.UserSignIn) 
 	}
 
 	userRecord := &models.UserRecord{
-		ID: uuid.NewString(),
 		User: models.User{
+			ID:    uuid.NewString(),
 			Name:  signInData.Name,
 			Email: signInData.Email,
 		},

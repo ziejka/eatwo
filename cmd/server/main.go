@@ -36,6 +36,14 @@ func main() {
 	}
 	userAuthService := services.NewAuthService(userRepository)
 
+	checkListRepository := db.NewCheckListRepository(sqlDB)
+	err = checkListRepository.Migrate(context.Background())
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	checkListService := services.NewCheckListService(checkListRepository)
+
 	e := echo.New()
 	defer e.Close()
 
@@ -44,7 +52,7 @@ func main() {
 	e.Use(services.JWTMiddleware)
 
 	e.Static("/", "assets")
-	handlers.SetRoutes(e, userAuthService, services.GenerateToken)
+	handlers.SetRoutes(e, userAuthService, services.GenerateToken, checkListService)
 
 	e.Logger.Fatal(e.Start("127.0.0.1:8080"))
 }
