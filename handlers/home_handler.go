@@ -10,46 +10,39 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type Home struct {
-	parseToken TokenParser
-}
+type Home struct{}
 
-func NewHome(parseToken TokenParser) *Home {
-	return &Home{
-		parseToken,
-	}
+func NewHome() *Home {
+	return &Home{}
 }
 
 func (h *Home) GetProtectedAbout(c echo.Context) error {
-	cookieToken, err := c.Cookie("token")
-	if err != nil {
-		c.Logger().Error(err)
+	claims := c.Get("claims")
+	if claims == nil {
 		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
 	}
 
-	claims, err := h.parseToken(cookieToken.Value)
-	if err != nil {
-		c.Logger().Error(err)
+	jwtClaims, ok := claims.(*jwt.RegisteredClaims)
+	if !ok {
 		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
 	}
-	return renderHTMX(c, http.StatusOK, pages.HomePage(claims.Subject), claims)
+
+	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Subject), jwtClaims)
 }
 
 func (h *Home) GetHome(c echo.Context) error {
-	claims, err := h.getClaimsFromCookie(c)
-	if err != nil {
-		c.Logger().Error(err)
+	claims := c.Get("claims")
+	if claims == nil {
+		c.Logger().Error("Unauthorize")
 		return renderHTMX(c, http.StatusOK, pages.HomePage(""), nil)
 	}
-	return renderHTMX(c, http.StatusOK, pages.HomePage(claims.Subject), claims)
-}
 
-func (h *Home) getClaimsFromCookie(c echo.Context) (*jwt.RegisteredClaims, error) {
-	cookieToken, err := c.Cookie("token")
-	if err != nil {
-		return nil, err
+	jwtClaims, ok := claims.(*jwt.RegisteredClaims)
+	if !ok {
+		c.Logger().Error("Invalid claims type")
+		return renderHTMX(c, http.StatusOK, pages.HomePage(""), nil)
 	}
-	return h.parseToken(cookieToken.Value)
+	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Subject), jwtClaims)
 }
 
 func (h *Home) GetSignIn(c echo.Context) error {

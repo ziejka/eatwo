@@ -41,9 +41,10 @@ func main() {
 
 	// e.Use(middleware.Logger())
 	// e.Logger.SetLevel(gLog.DEBUG)
+	e.Use(services.JWTMiddleware)
 
 	e.Static("/", "assets")
-	handlers.SetRoutes(e, userAuthService, services.GenerateToken, services.ParseToken)
+	handlers.SetRoutes(e, userAuthService, services.GenerateToken)
 
 	e.Logger.Fatal(e.Start("127.0.0.1:8080"))
 }

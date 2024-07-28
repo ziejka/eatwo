@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/labstack/echo/v4"
 )
 
 func GenerateToken(user models.User) (string, error) {
@@ -20,7 +21,24 @@ func GenerateToken(user models.User) (string, error) {
 	return token.SignedString(jwtKey)
 }
 
-func ParseToken(tokenString string) (*jwt.RegisteredClaims, error) {
+func JWTMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		cookieToken, err := c.Cookie("token")
+		if err != nil {
+			return next(c)
+		}
+
+		claims, err := parseToken(cookieToken.Value)
+		if err != nil {
+			return next(c)
+		}
+
+		c.Set("claims", claims)
+		return next(c)
+	}
+}
+
+func parseToken(tokenString string) (*jwt.RegisteredClaims, error) {
 	jwtKey := []byte(os.Getenv("JWT_SECRET"))
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:

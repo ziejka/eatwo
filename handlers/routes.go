@@ -10,12 +10,13 @@ import (
 type TokenGenerator func(user models.User) (string, error)
 type TokenParser func(tokenString string) (*jwt.RegisteredClaims, error)
 
-func SetRoutes(e *echo.Echo, userAuthService UserAuthService, tokenGenerator TokenGenerator, tokenParser TokenParser) {
-	homeHandler := NewHome(tokenParser)
+func SetRoutes(e *echo.Echo, userAuthService UserAuthService, tokenGenerator TokenGenerator) {
+	homeHandler := NewHome()
 	authHandler := NewAuthHandler(userAuthService, tokenGenerator)
 
 	// home routes
 	e.GET("/", homeHandler.GetHome)
+	e.GET("/about", homeHandler.GetProtectedAbout)
 	e.GET("/signin", homeHandler.GetSignIn)
 	e.GET("/login", homeHandler.GetLogIn)
 

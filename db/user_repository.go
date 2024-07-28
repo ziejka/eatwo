@@ -20,10 +20,10 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*models.UserRecord, error) {
-	rows := r.db.QueryRow("SELECT * FROM users WHERE email = ?", email)
+	row := r.db.QueryRowContext(ctx, "SELECT * FROM users WHERE email = ?", email)
 	var user models.UserRecord
 
-	if err := rows.Scan(&user.ID, &user.Email, &user.Name, &user.HashPassword); err != nil {
+	if err := row.Scan(&user.ID, &user.Email, &user.Name, &user.HashPassword); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, shared.ErrNotExists
 		}
