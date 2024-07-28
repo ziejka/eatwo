@@ -13,6 +13,7 @@ import (
 type CheckListService interface {
 	CreateCheckListItem(ctx context.Context, item *models.CheckListItem) error
 	CreateCheckList(ctx context.Context, list *models.CheckList) error
+	GetByUser(ctx context.Context, userID string) ([]models.CheckListRecord, error)
 }
 
 type CheckListHandler struct {
@@ -29,7 +30,26 @@ type NewCheckList struct {
 	Name string `form:"name"`
 }
 
-func (l *CheckListHandler) PostListHandler(c echo.Context) error {
+func (l *CheckListHandler) GetCheckListHandler(c echo.Context) error {
+	claims := c.Get("claims")
+	if claims == nil {
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+	}
+
+	jwtClaims, ok := claims.(*services.CustomClaims)
+	if !ok {
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+	}
+
+	checkList, err := l.checklistService.GetByUser(c.Request().Context(), jwtClaims.UserID)
+	if err != nil {
+		c.Logger().Error(err)
+		checkList = []models.CheckListRecord{}
+	}
+	return renderHTMX(c, http.StatusOK, pages.CheckList(checkList), jwtClaims)
+}
+
+func (l *CheckListHandler) PostCheckListHandler(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
 		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)

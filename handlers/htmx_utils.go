@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"eatwo/services"
+	"eatwo/views/layouts"
+
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
@@ -15,4 +18,11 @@ func render(c echo.Context, statusCode int, t templ.Component) error {
 	}
 
 	return c.HTML(statusCode, buf.String())
+}
+
+func renderHTMX(c echo.Context, statusCode int, t templ.Component, claims *services.CustomClaims) error {
+	if c.Request().Header.Get("HX-Request") != "true" {
+		t = layouts.Base(claims, t)
+	}
+	return render(c, statusCode, t)
 }

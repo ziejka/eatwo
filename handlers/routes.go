@@ -19,12 +19,13 @@ func SetRoutes(e *echo.Echo, userAuthService UserAuthService, tokenGenerator Tok
 	e.GET("/signin", homeHandler.GetSignIn)
 	e.GET("/login", homeHandler.GetLogIn)
 
-	// API v1
+	// checkList
+	e.GET("/check-list", checkListHandler.GetCheckListHandler)
+	e.POST("/api/v1/check-list", checkListHandler.PostCheckListHandler)
+
 	// Auth
 	e.POST("/api/v1/signin", authHandler.SignInPostHandler)
 	e.POST("/api/v1/login", authHandler.LogInPostHandler)
 	e.POST("/api/v1/logout", authHandler.Logout)
 
-	// checkList
-	e.POST("/api/v1/check-list", checkListHandler.PostListHandler)
 }

@@ -8,7 +8,7 @@ import (
 type CheckListRepository interface {
 	Create(ctx context.Context, checkList *models.CheckList) error
 	CreateItem(ctx context.Context, checklistItem *models.CheckListItem) error
-	GetByUser(ctx context.Context, email string) (*models.ListWithItems, error)
+	GetByUser(ctx context.Context, email string) ([]models.CheckListRecord, error)
 }
 
 type CheckListService struct {
@@ -21,7 +21,7 @@ func NewCheckListService(c CheckListRepository) *CheckListService {
 	}
 }
 
-func (c *CheckListService) GetByUser(ctx context.Context, userID string) (*models.ListWithItems, error) {
+func (c *CheckListService) GetByUser(ctx context.Context, userID string) ([]models.CheckListRecord, error) {
 	return c.checkListRepository.GetByUser(ctx, userID)
 }
 

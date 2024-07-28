@@ -2,11 +2,9 @@ package handlers
 
 import (
 	"eatwo/services"
-	"eatwo/views/layouts"
 	"eatwo/views/pages"
 	"net/http"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
@@ -51,11 +49,4 @@ func (h *Home) GetSignIn(c echo.Context) error {
 
 func (h *Home) GetLogIn(c echo.Context) error {
 	return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
-}
-
-func renderHTMX(c echo.Context, statusCode int, t templ.Component, claims *services.CustomClaims) error {
-	if c.Request().Header.Get("HX-Request") != "true" {
-		t = layouts.Base(claims, t)
-	}
-	return render(c, statusCode, t)
 }

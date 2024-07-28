@@ -44,5 +44,6 @@ templ UnlogNavigation() {
 templ LoggedNavigation() {
 	@Navigation() {
 		<a hx-target="#main" hx-post="/api/v1/logout">Logout</a>
+		<a hx-target="#main" hx-get="/check-list">CheckLists</a>
 	}
 }

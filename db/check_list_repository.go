@@ -23,7 +23,37 @@ type CheckListWithItemsRecord struct {
 	itemValue string
 }
 
-func (l *CheckListRepository) GetByUser(ctx context.Context, userID string) (*models.ListWithItems, error) {
+func (l *CheckListRepository) GetByUser(ctx context.Context, userID string) ([]models.CheckListRecord, error) {
+	rows, err := l.db.QueryContext(ctx,
+		`SELECT l.id, l.user_id, l.name
+		FROM lists l
+		WHERE l.user_id = ?;
+	`, userID)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var checkLists []models.CheckListRecord
+	for rows.Next() {
+		var checkList models.CheckListRecord
+
+		if err := rows.Scan(&checkList.ID, &checkList.UserID, &checkList.Name); err != nil {
+			return nil, err
+		}
+		checkLists = append(checkLists, checkList)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return checkLists, nil
+
+}
+
+func (l *CheckListRepository) GetCheckListWithItemsByUser(ctx context.Context, userID string) (*models.ListWithItems, error) {
 	rows, err := l.db.QueryContext(ctx,
 		`SELECT l.id, l.name, i.id, i."value"
 		FROM lists l

@@ -10,6 +10,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	gLog "github.com/labstack/gommon/log"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -48,7 +49,7 @@ func main() {
 	defer e.Close()
 
 	// e.Use(middleware.Logger())
-	// e.Logger.SetLevel(gLog.DEBUG)
+	e.Logger.SetLevel(gLog.DEBUG)
 	e.Use(services.JWTMiddleware)
 
 	e.Static("/", "assets")
