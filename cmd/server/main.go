@@ -44,7 +44,6 @@ func main() {
 		return
 	}
 	checkListService := services.NewCheckListService(checkListRepository)
-
 	e := echo.New()
 	defer e.Close()
 

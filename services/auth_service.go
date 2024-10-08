@@ -42,8 +42,8 @@ func (a *AuthService) Validate(ctx context.Context, logInData models.UserLogIn) 
 	return user.User, nil
 }
 
-func (a *AuthService) Create(ctx context.Context, signInData models.UserSignIn) (models.User, error) {
-	_, err := a.userRepository.GetByEmail(ctx, signInData.Email)
+func (a *AuthService) Create(ctx context.Context, signUpData models.UserSignUp) (models.User, error) {
+	_, err := a.userRepository.GetByEmail(ctx, signUpData.Email)
 	if err == nil {
 		return models.User{}, shared.ErrUserWithEmailExist
 	}
@@ -51,7 +51,7 @@ func (a *AuthService) Create(ctx context.Context, signInData models.UserSignIn) 
 		return models.User{}, shared.ErrDefaultInternal
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(signInData.Password), bcrypt.MinCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(signUpData.Password), bcrypt.MinCost)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -59,8 +59,8 @@ func (a *AuthService) Create(ctx context.Context, signInData models.UserSignIn) 
 	userRecord := &models.UserRecord{
 		User: models.User{
 			ID:    uuid.NewString(),
-			Name:  signInData.Name,
-			Email: signInData.Email,
+			Name:  signUpData.Name,
+			Email: signUpData.Email,
 		},
 		HashPassword: string(hashedPassword),
 	}

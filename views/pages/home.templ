@@ -16,7 +16,7 @@ templ HomePageWithNavigation(name string) {
 	} else {
 		@layouts.LoggedNavigation()
 	}
-	<main id="main" class="p-4" hx-swap-oob="true">
+	<main id="main" hx-swap-oob="true">
 		@HomePage(name)
 	</main>
 }

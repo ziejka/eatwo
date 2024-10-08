@@ -7,17 +7,18 @@ templ Base(claims *services.CustomClaims, children ...templ.Component) {
 		<head>
 			<title>Templ + HTMX + Tailwind</title>
 			<link href="/css/tailwind.css" type="text/css" rel="stylesheet"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			<script src="/js/htmx.min.js"></script>
 		</head>
 		<body class="bg-slate-200 text-slate-800">
-			<header class="p-4">
+			<header class="m-4">
 				if claims == nil {
 					@UnlogNavigation()
 				} else {
 					@LoggedNavigation()
 				}
 			</header>
-			<main id="main" class="p-4">
+			<main id="main">
 				for _, child := range children {
 					@child
 				}
@@ -28,22 +29,40 @@ templ Base(claims *services.CustomClaims, children ...templ.Component) {
 }
 
 templ Navigation() {
-	<nav id="nav" class="flex gap-4 py-2" hx-swap-oob="true">
-		<a hx-target="#main" hx-get="/">Home</a>
+	<nav id="nav" class="flex gap-4 bg-slate-300 px-4 pt-4 rounded-lg shadow-md shadow-slate-400" hx-swap-oob="true">
+		@NavLink("/", "Home")
 		{ children... }
 	</nav>
 }
 
 templ UnlogNavigation() {
 	@Navigation() {
-		<a hx-target="#main" hx-get="/login">Log In</a>
-		<a hx-target="#main" hx-get="/signin">Sign In</a>
+		@NavLink("/login", "Log In")
+		@NavLink("/sing-up", "Sign In")
 	}
 }
 
 templ LoggedNavigation() {
 	@Navigation() {
-		<a hx-target="#main" hx-post="/api/v1/logout">Logout</a>
-		<a hx-target="#main" hx-get="/check-list">CheckLists</a>
+		@NavLink("/check-list", "CheckLists")
+		@NavLogoutLink()
 	}
+}
+
+templ NavLink(url string, text string) {
+	<a
+		class="cursor-pointer font-medium text-slate-600 pb-4 border-b border-b-transparent hover:text-slate-900 hover:border-b-sky-800 transition-all"
+		hx-target="#main"
+		hx-push-url="true"
+		hx-get={ url }
+	>{ text }</a>
+}
+
+templ NavLogoutLink() {
+	<a
+		class="cursor-pointer font-medium text-slate-600 pb-4 border-b border-b-transparent hover:text-slate-900 hover:border-b-sky-800 transition-all ml-auto"
+		hx-target="#main"
+		hx-push-url="true"
+		hx-post="/api/v1/logout"
+	>Logout</a>
 }

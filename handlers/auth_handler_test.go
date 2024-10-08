@@ -19,16 +19,16 @@ import (
 
 type mockUserAuthService struct{}
 
-func (m *mockUserAuthService) Create(ctx context.Context, signInData models.UserSignIn) (models.User, error) {
-	if signInData.Email == "existing@example.com" {
+func (m *mockUserAuthService) Create(ctx context.Context, signUpData models.UserSignUp) (models.User, error) {
+	if signUpData.Email == "existing@example.com" {
 		return models.User{}, shared.ErrUserWithEmailExist
 	}
-	if signInData.Password == "InternalError" {
+	if signUpData.Password == "InternalError" {
 		return models.User{}, shared.ErrDefaultInternal
 	}
 	return models.User{
-		Email: signInData.Email,
-		Name:  signInData.Name,
+		Email: signUpData.Email,
+		Name:  signUpData.Name,
 	}, nil
 }
 
@@ -147,15 +147,15 @@ func TestAuthHandler_LogInPostHandler_InternalServerError(t *testing.T) {
 	}
 }
 
-func TestAuthHandler_SignInPostHandler(t *testing.T) {
+func TestAuthHandler_SignUpPostHandler(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/signin", strings.NewReader(`{"email": "new@example.com", "password": "password", "name": "New User"}`))
+	req := httptest.NewRequest(http.MethodPost, "/sing-up", strings.NewReader(`{"email": "new@example.com", "password": "password", "name": "New User"}`))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
-	err := handler.SignInPostHandler(c)
+	err := handler.SignUpPostHandler(c)
 
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
@@ -174,15 +174,15 @@ func TestAuthHandler_SignInPostHandler(t *testing.T) {
 	}
 }
 
-func TestAuthHandler_SignInPostHandler_UserWithEmailExist(t *testing.T) {
+func TestAuthHandler_SignUpPostHandler_UserWithEmailExist(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/signin", strings.NewReader(`{"email": "existing@example.com", "password": "password", "name": "New User"}`))
+	req := httptest.NewRequest(http.MethodPost, "/sign-up", strings.NewReader(`{"email": "existing@example.com", "password": "password", "name": "New User"}`))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
-	err := handler.SignInPostHandler(c)
+	err := handler.SignUpPostHandler(c)
 
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
@@ -201,15 +201,15 @@ func TestAuthHandler_SignInPostHandler_UserWithEmailExist(t *testing.T) {
 	}
 }
 
-func TestAuthHandler_SignInPostHandler_InternalServerError(t *testing.T) {
+func TestAuthHandler_SignUpPostHandler_InternalServerError(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/signin", strings.NewReader(`{"email": "new@example.com", "password": "InternalError", "name": "New User"}`))
+	req := httptest.NewRequest(http.MethodPost, "/sign-up", strings.NewReader(`{"email": "new@example.com", "password": "InternalError", "name": "New User"}`))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
-	err := handler.SignInPostHandler(c)
+	err := handler.SignUpPostHandler(c)
 
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)

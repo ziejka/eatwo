@@ -12,7 +12,7 @@ import (
 )
 
 type UserAuthService interface {
-	Create(ctx context.Context, signInData models.UserSignIn) (models.User, error)
+	Create(ctx context.Context, signUpData models.UserSignUp) (models.User, error)
 	Validate(ctx context.Context, logInData models.UserLogIn) (models.User, error)
 }
 
@@ -65,14 +65,14 @@ func (a *AuthHandler) LogInPostHandler(c echo.Context) error {
 	return render(c, http.StatusOK, pages.HomePageWithNavigation(user.Email))
 }
 
-func (a *AuthHandler) SignInPostHandler(c echo.Context) error {
-	var signInData models.UserSignIn
-	if err := c.Bind(&signInData); err != nil {
+func (a *AuthHandler) SignUpPostHandler(c echo.Context) error {
+	var signUpData models.UserSignUp
+	if err := c.Bind(&signUpData); err != nil {
 		c.Logger().Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
 	}
 
-	user, err := a.userAuthService.Create(c.Request().Context(), signInData)
+	user, err := a.userAuthService.Create(c.Request().Context(), signUpData)
 	if err != nil {
 		c.Logger().Error(err.Error())
 

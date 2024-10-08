@@ -23,6 +23,10 @@ type CheckListWithItemsRecord struct {
 	itemValue string
 }
 
+type CheckListIDRecor struct {
+	listID uint
+}
+
 func (l *CheckListRepository) GetByUser(ctx context.Context, userID string) ([]models.CheckListRecord, error) {
 	rows, err := l.db.QueryContext(ctx,
 		`SELECT l.id, l.user_id, l.name
@@ -53,13 +57,13 @@ func (l *CheckListRepository) GetByUser(ctx context.Context, userID string) ([]m
 
 }
 
-func (l *CheckListRepository) GetCheckListWithItemsByUser(ctx context.Context, userID string) (*models.ListWithItems, error) {
+func (l *CheckListRepository) GetListWithItemsById(ctx context.Context, userID string, listID uint) (*models.ListWithItems, error) {
 	rows, err := l.db.QueryContext(ctx,
 		`SELECT l.id, l.name, i.id, i."value"
 		FROM lists l
 		JOIN items i ON i.list_id = l.id
-		WHERE l.user_id = ?;
-	`, userID)
+		WHERE l.id = ? AND l.user_id = ?;
+	`, listID, userID)
 
 	if err != nil {
 		return nil, err
@@ -95,8 +99,18 @@ func (l *CheckListRepository) Create(ctx context.Context, checkList *models.Chec
 	return err
 }
 
+func (l *CheckListRepository) GetListIDByUser(ctx context.Context, userID string, listID uint) (uint, error) {
+	row := l.db.QueryRowContext(ctx, "SELECT id FROM lists WHERE id = ? AND user_id = ?", listID, userID)
+	var listIDRecors CheckListIDRecor
+	if err := row.Scan(&listIDRecors.listID); err != nil {
+		return 0, err
+	}
+
+	return listIDRecors.listID, nil
+}
+
 func (l *CheckListRepository) CreateItem(ctx context.Context, checklistItem *models.CheckListItem) error {
-	_, err := l.db.ExecContext(ctx, `INSERT INTO item (value, list_id) VALUES (?, ?)`, checklistItem.Value, checklistItem.ListID)
+	_, err := l.db.ExecContext(ctx, `INSERT INTO items (value, list_id) VALUES (?, ?)`, checklistItem.Value, checklistItem.ListID)
 	return err
 }
 

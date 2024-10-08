@@ -9,6 +9,8 @@ type CheckListRepository interface {
 	Create(ctx context.Context, checkList *models.CheckList) error
 	CreateItem(ctx context.Context, checklistItem *models.CheckListItem) error
 	GetByUser(ctx context.Context, email string) ([]models.CheckListRecord, error)
+	GetListWithItemsById(ctx context.Context, userID string, listID uint) (*models.ListWithItems, error)
+  GetListIDByUser(ctx context.Context, userID string, listID uint) (uint, error)
 }
 
 type CheckListService struct {
@@ -29,6 +31,14 @@ func (c *CheckListService) CreateCheckList(ctx context.Context, list *models.Che
 	return c.checkListRepository.Create(ctx, list)
 }
 
-func (c *CheckListService) CreateCheckListItem(ctx context.Context, item *models.CheckListItem) error {
+func (c *CheckListService) CreateCheckListItem(ctx context.Context, userID string, item *models.CheckListItem) error {
+  _, err := c.checkListRepository.GetListIDByUser(ctx, userID, item.ListID)
+  if err != nil {
+    return err
+  }
 	return c.checkListRepository.CreateItem(ctx, item)
+}
+
+func (c *CheckListService) GetListById(ctx context.Context, userID string, listID uint) (*models.ListWithItems, error) {
+	return c.checkListRepository.GetListWithItemsById(ctx, userID, listID)
 }

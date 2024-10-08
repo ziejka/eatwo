@@ -31,7 +31,6 @@ func (h *Home) GetProtectedAbout(c echo.Context) error {
 func (h *Home) GetHome(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		c.Logger().Error("Unauthorize")
 		return renderHTMX(c, http.StatusOK, pages.HomePage(""), nil)
 	}
 
@@ -43,8 +42,8 @@ func (h *Home) GetHome(c echo.Context) error {
 	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Subject), jwtClaims)
 }
 
-func (h *Home) GetSignIn(c echo.Context) error {
-	return renderHTMX(c, http.StatusOK, pages.SignInPage(), nil)
+func (h *Home) GetSignUp(c echo.Context) error {
+	return renderHTMX(c, http.StatusOK, pages.SignUpPage(), nil)
 }
 
 func (h *Home) GetLogIn(c echo.Context) error {

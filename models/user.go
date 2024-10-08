@@ -11,7 +11,7 @@ type UserLogIn struct {
 	Password string `form:"password"`
 }
 
-type UserSignIn struct {
+type UserSignUp struct {
 	UserLogIn
 	Name string `form:"name"`
 }

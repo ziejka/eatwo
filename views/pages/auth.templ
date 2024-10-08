@@ -1,37 +1,43 @@
 package pages
 
-import "eatwo/views/components"
-import "fmt"
+import (
+	"eatwo/views/components"
+	"fmt"
+)
 
-templ passwordForm(authType string) {
+templ passwordForm(authType string, buttonText string) {
 	<div id="loading-overlay"></div>
 	<div id="auth-error" class="hidden"></div>
 	<form
 		hx-post={ string(templ.URL(fmt.Sprintf("/api/v1/%s", authType))) }
 		hx-indicator="#loading-overlay"
-		class="grid gap-2 w-80 mx-auto"
+		class="grid gap-4 w-80 mx-auto rounded-lg shadow-md shadow-slate-300 p-4 bg-slate-100"
 		hx-target="#main"
 	>
-		<div class="grid">
+		<div class="grid gap-1">
 			<label for="email">Email</label>
-			@components.Input("email", "text", true)
+			@components.Input("email", "text", "anna@email.com", true)
 		</div>
-		<div class="grid">
+		<div class="grid gap-1">
 			<label for="email">Password</label>
-			@components.Input("password", "password", true)
+			@components.Input("password", "password", "Complicated password", true)
 		</div>
-		<button type="submit" class="rounded bg-sky-500 text-sky-50 text-xl font-bold border border-sky-700 px-4 py-2">Submit</button>
+		@components.MButton(buttonText, components.Submit)
 	</form>
 }
 
-templ LoginPage() {
-	<h1 class="text-xl text-center">Log In page</h1>
-	@passwordForm("login")
+templ title(text string) {
+	<h1 class="text-xl font-bold text-center mb-4 mt-20">{ text }</h1>
 }
 
-templ SignInPage() {
-	<h1 class="text-xl text-center">Sign In page</h1>
-	@passwordForm("signin")
+templ LoginPage() {
+  @title("Log In")
+	@passwordForm("login", "Log In")
+}
+
+templ SignUpPage() {
+  @title("Sign Up")
+	@passwordForm("sing-up", "Sign Up")
 }
 
 templ AuthError(message string) {
