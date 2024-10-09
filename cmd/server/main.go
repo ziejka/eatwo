@@ -47,12 +47,21 @@ func main() {
 	e := echo.New()
 	defer e.Close()
 
+	aiService := services.NewMockAIService()
+
+	s := handlers.Services{
+		UserAuthService:  userAuthService,
+		TokenGenerator:   services.GenerateToken,
+		CheckListService: checkListService,
+		AIService:        aiService,
+	}
+
 	// e.Use(middleware.Logger())
 	e.Logger.SetLevel(gLog.DEBUG)
 	e.Use(services.JWTMiddleware)
 
 	e.Static("/", "assets")
-	handlers.SetRoutes(e, userAuthService, services.GenerateToken, checkListService)
+	handlers.SetRoutes(e, s)
 
 	e.Logger.Fatal(e.Start("127.0.0.1:8080"))
 }

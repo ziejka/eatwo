@@ -7,11 +7,18 @@ import (
 )
 
 type TokenGenerator func(user models.User) (string, error)
+type Services struct {
+	UserAuthService  UserAuthService
+	TokenGenerator   TokenGenerator
+	CheckListService CheckListService
+	AIService        AIService
+}
 
-func SetRoutes(e *echo.Echo, userAuthService UserAuthService, tokenGenerator TokenGenerator, checklistService CheckListService) {
+func SetRoutes(e *echo.Echo, services Services) {
 	homeHandler := NewHome()
-	authHandler := NewAuthHandler(userAuthService, tokenGenerator)
-	checkListHandler := NewCheckListHandler(checklistService)
+	authHandler := NewAuthHandler(services.UserAuthService, services.TokenGenerator)
+	checkListHandler := NewCheckListHandler(services.CheckListService)
+	dreamHander := NewDreamHandler(services.AIService)
 
 	// home routes
 	e.GET("/", homeHandler.GetHome)
@@ -19,14 +26,17 @@ func SetRoutes(e *echo.Echo, userAuthService UserAuthService, tokenGenerator Tok
 	e.GET("/sing-up", homeHandler.GetSignUp)
 	e.GET("/login", homeHandler.GetLogIn)
 
+	// dream routes
+	e.POST("/api/v1/dream", dreamHander.PostDream)
+
 	// checkList
-	e.GET("/check-list", checkListHandler.GetCheckListsHandler)
-	e.GET("/check-list/:id", checkListHandler.GetCheckListHandler)
-	e.POST("/api/v1/check-list", checkListHandler.PostCheckListHandler)
-	e.POST("/api/v1/check-list/:id", checkListHandler.PostItemHandler)
+	e.GET("/check-list", checkListHandler.GetCheckLists)
+	e.GET("/check-list/:id", checkListHandler.GetCheckList)
+	e.POST("/api/v1/check-list", checkListHandler.PostCheckList)
+	e.POST("/api/v1/check-list/:id", checkListHandler.PostItem)
 
 	// Auth
-	e.POST("/api/v1/sing-up", authHandler.SignUpPostHandler)
-	e.POST("/api/v1/login", authHandler.LogInPostHandler)
-	e.POST("/api/v1/logout", authHandler.Logout)
+	e.POST("/api/v1/sing-up", authHandler.PostSignUp)
+	e.POST("/api/v1/login", authHandler.PostLogIn)
+	e.DELETE("/api/v1/logout", authHandler.DeleteLogout)
 }

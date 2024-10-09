@@ -3,12 +3,13 @@ package pages
 import "eatwo/views/layouts"
 
 templ HomePage(name string) {
-	if name == "" {
-		<h1 class="text-gray-900 text-4xl font-bold">Public homepage</h1>
-	} else {
-		<h1 class="text-gray-900 text-4xl font-bold">Protected homepage user: { name }</h1>
-	}
+  <h1 class="text-gray-900 text-4xl font-bold">Hello, { name } decode your dreams</h1>
 }
+
+templ HomePagePublic() {
+  <h1 class="text-gray-900 text-4xl font-bold">Dream decoder</h1>
+}
+
 
 templ HomePageWithNavigation(name string) {
 	if name == "" {

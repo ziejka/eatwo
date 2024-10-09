@@ -28,7 +28,7 @@ func NewAuthHandler(userAuthService UserAuthService, tokenGenerator TokenGenerat
 	}
 }
 
-func (a *AuthHandler) Logout(c echo.Context) error {
+func (a *AuthHandler) DeleteLogout(c echo.Context) error {
 	// Old token should be stored in some key-value and check if it was logged out
 	cookie := &http.Cookie{
 		Name:     "token",
@@ -43,7 +43,7 @@ func (a *AuthHandler) Logout(c echo.Context) error {
 	return render(c, http.StatusOK, pages.HomePageWithNavigation(""))
 }
 
-func (a *AuthHandler) LogInPostHandler(c echo.Context) error {
+func (a *AuthHandler) PostLogIn(c echo.Context) error {
 	var logInData models.UserLogIn
 	if err := c.Bind(&logInData); err != nil {
 		c.Logger().Error(err.Error())
@@ -65,7 +65,7 @@ func (a *AuthHandler) LogInPostHandler(c echo.Context) error {
 	return render(c, http.StatusOK, pages.HomePageWithNavigation(user.Email))
 }
 
-func (a *AuthHandler) SignUpPostHandler(c echo.Context) error {
+func (a *AuthHandler) PostSignUp(c echo.Context) error {
 	var signUpData models.UserSignUp
 	if err := c.Bind(&signUpData); err != nil {
 		c.Logger().Error(err.Error())

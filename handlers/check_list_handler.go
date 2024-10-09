@@ -36,7 +36,7 @@ type NewCheckListItem struct {
 	Value string `form:"value"`
 }
 
-func (l *CheckListHandler) GetCheckListHandler(c echo.Context) error {
+func (l *CheckListHandler) GetCheckList(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
 		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
@@ -62,7 +62,7 @@ func (l *CheckListHandler) GetCheckListHandler(c echo.Context) error {
 	return renderHTMX(c, http.StatusOK, pages.CheckList(checkList), jwtClaims)
 }
 
-func (l *CheckListHandler) GetCheckListsHandler(c echo.Context) error {
+func (l *CheckListHandler) GetCheckLists(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
 		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
@@ -81,7 +81,7 @@ func (l *CheckListHandler) GetCheckListsHandler(c echo.Context) error {
 	return renderHTMX(c, http.StatusOK, pages.CheckLists(checkLists), jwtClaims)
 }
 
-func (l *CheckListHandler) PostItemHandler(c echo.Context) error {
+func (l *CheckListHandler) PostItem(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
 		// TODO: Render error for API
@@ -120,10 +120,10 @@ func (l *CheckListHandler) PostItemHandler(c echo.Context) error {
 		return err
 	}
 
-	return l.GetCheckListHandler(c)
+	return l.GetCheckList(c)
 }
 
-func (l *CheckListHandler) PostCheckListHandler(c echo.Context) error {
+func (l *CheckListHandler) PostCheckList(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
 		// TODO: Render error for API
@@ -150,5 +150,5 @@ func (l *CheckListHandler) PostCheckListHandler(c echo.Context) error {
 		return err
 	}
 
-	return l.GetCheckListsHandler(c)
+	return l.GetCheckLists(c)
 }
