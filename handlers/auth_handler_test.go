@@ -62,7 +62,7 @@ func TestAuthHandler_LogInPostHandler(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
-	err := handler.LogInPost(c)
+	err := handler.PostLogIn(c)
 
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
@@ -98,7 +98,7 @@ func TestAuthHandler_LogInPostHandler_WrongEmailOrPassword(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
-	err := handler.LogInPost(c)
+	err := handler.PostLogIn(c)
 
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
@@ -128,7 +128,7 @@ func TestAuthHandler_LogInPostHandler_InternalServerError(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
-	err := handler.LogInPost(c)
+	err := handler.PostLogIn(c)
 
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
@@ -155,7 +155,7 @@ func TestAuthHandler_SignUpPostHandler(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
-	err := handler.SignUpPost(c)
+	err := handler.PostSignUp(c)
 
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
@@ -182,7 +182,7 @@ func TestAuthHandler_SignUpPostHandler_UserWithEmailExist(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
-	err := handler.SignUpPost(c)
+	err := handler.PostSignUp(c)
 
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
@@ -209,7 +209,7 @@ func TestAuthHandler_SignUpPostHandler_InternalServerError(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	handler := handlers.NewAuthHandler(&mockUserAuthService{}, generateTokenMock)
-	err := handler.SignUpPost(c)
+	err := handler.PostSignUp(c)
 
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
