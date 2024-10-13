@@ -15,7 +15,7 @@ type AIService interface {
 	Call(ctx context.Context, prompt string) (*models.AIResponse, error)
 }
 
-type DreamService interface {
+type DreamUpdater interface {
 	Create(ctx context.Context, prompt string, userID string) (*models.DreamRecord, error)
 	GetByUserID(ctx context.Context, userID string) ([]*models.DreamRecord, error)
 	UpdateExplanation(ctx context.Context, dreamID, explanation string, userID string) error
@@ -23,13 +23,13 @@ type DreamService interface {
 
 type DreamHandler struct {
 	aiService    AIService
-	dreamService DreamService
+	dreamUpdater DreamUpdater
 }
 
-func NewDreamHandler(aiService AIService, ds DreamService) *DreamHandler {
+func NewDreamHandler(aiService AIService, du DreamUpdater) *DreamHandler {
 	return &DreamHandler{
 		aiService:    aiService,
-		dreamService: ds,
+		dreamUpdater: du,
 	}
 }
 
@@ -58,7 +58,7 @@ func (l *DreamHandler) PostDream(c echo.Context) error {
 		return renderError(c, http.StatusBadRequest, "Prompt cannot be empty")
 	}
 
-	dream, err := l.dreamService.Create(c.Request().Context(), dreamRequestBody.Prompt, customClaims.UserID)
+	dream, err := l.dreamUpdater.Create(c.Request().Context(), dreamRequestBody.Prompt, customClaims.UserID)
 	if err != nil {
 		return renderError(c, http.StatusBadRequest, fmt.Sprint("Could not create dream: ", err))
 	}
@@ -69,7 +69,7 @@ func (l *DreamHandler) PostDream(c echo.Context) error {
 		return renderError(c, http.StatusBadRequest, fmt.Sprint("Could not decode a dream: ", err))
 	}
 
-	err = l.dreamService.UpdateExplanation(c.Request().Context(), dream.ID, resp.Content, customClaims.UserID)
+	err = l.dreamUpdater.UpdateExplanation(c.Request().Context(), dream.ID, resp.Content, customClaims.UserID)
 	if err != nil {
 		return renderError(c, http.StatusBadRequest, fmt.Sprint("Could not update dream: ", err))
 	}

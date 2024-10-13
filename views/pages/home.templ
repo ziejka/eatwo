@@ -1,16 +1,20 @@
 package pages
 
 import (
+	"eatwo/models"
 	"eatwo/views/components"
 	"eatwo/views/layouts"
 )
 
-templ HomePage(name string) {
+templ HomePage(name string, dreams []*models.DreamRecord) {
 	<h1 class="px-4 my-6 text-slate-900 text-2xl text-center font-semibold">
 		Welcome, { name }!
 		<br/>
 		Unveil the Secrets of Your Dreams Today
 	</h1>
+	for _, dream := range dreams {
+		@DreamExplained(dream.Description, dream.Explanation)
+	}
 	@DreamPrompt("What did you dream about?")
 }
 
@@ -34,15 +38,15 @@ templ HomePageWithNavigation(name string) {
 		@layouts.LoggedNavigation()
 	}
 	<main id="main" hx-swap-oob="true">
-		@HomePage(name)
+		@HomePage(name, nil)
 	</main>
 }
 
 templ DreamPrompt(question string) {
-	<div id="dream-prompt">
+	<div id="dream-prompt" class="mt-2">
 		<div id="error-message" class="hidden"></div>
 		@components.Panel() {
-			<h2 class="text-slate-900 font-semibold mb-4">{question}</h2>
+			<h2 class="text-slate-900 font-semibold mb-4">{ question }</h2>
 			<form
 				class="flex flex-col items-center justify-center gap-4"
 				hx-post="/api/v1/dream"
@@ -56,12 +60,16 @@ templ DreamPrompt(question string) {
 	</div>
 }
 
-templ DreamPromptResponse(dream string, response string) {
-	@components.Panel() {
-		<p class="text-slate-600 mb-4 italic">{ dream }</p>
-		<p class="text-slate-900">{ response } </p>
-	}
+templ DreamExplained(dream string, response string) {
 	<div class="mt-2">
-		@DreamPrompt("Ask more about this dream")
+		@components.Panel() {
+			<p class="text-slate-600 mb-4 italic">{ dream }</p>
+			<p class="text-slate-900">{ response } </p>
+		}
 	</div>
+}
+
+templ DreamPromptResponse(dream string, response string) {
+	@DreamExplained(dream, response)
+	@DreamPrompt("Ask more about this dream")
 }

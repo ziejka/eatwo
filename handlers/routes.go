@@ -12,11 +12,11 @@ type Services struct {
 	TokenGenerator   TokenGenerator
 	CheckListService CheckListService
 	AIService        AIService
-	DreamService     DreamService
+	DreamService     DreamUpdater
 }
 
 func SetRoutes(e *echo.Echo, services Services) {
-	homeHandler := NewHome()
+	homeHandler := NewHome(services.DreamService)
 	authHandler := NewAuthHandler(services.UserAuthService, services.TokenGenerator)
 	checkListHandler := NewCheckListHandler(services.CheckListService)
 	dreamHander := NewDreamHandler(services.AIService, services.DreamService)
