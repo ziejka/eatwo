@@ -47,20 +47,20 @@ func (a *AuthHandler) PostLogIn(c echo.Context) error {
 	var logInData models.UserLogIn
 	if err := c.Bind(&logInData); err != nil {
 		c.Logger().Error(err.Error())
-		return a.error(c, http.StatusBadRequest, "Invalid input")
+		return renderError(c, http.StatusBadRequest, "Invalid input")
 	}
 
 	user, err := a.userAuthService.Validate(c.Request().Context(), logInData)
 	if err != nil {
 		if errors.Is(err, shared.ErrUserWrongEmailOrPassword) {
-			return a.error(c, http.StatusUnauthorized, "Wrong email or password")
+			return renderError(c, http.StatusUnauthorized, "Wrong email or password")
 		}
-		return a.error(c, http.StatusUnauthorized, "something went wrong please try again")
+		return renderError(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
 
 	err = a.setTokenCookie(c, user)
 	if err != nil {
-		return a.error(c, http.StatusUnauthorized, "something went wrong please try again")
+		return renderError(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
 	return render(c, http.StatusOK, pages.HomePageWithNavigation(user.Email))
 }
@@ -77,14 +77,14 @@ func (a *AuthHandler) PostSignUp(c echo.Context) error {
 		c.Logger().Error(err.Error())
 
 		if errors.Is(err, shared.ErrUserWithEmailExist) {
-			return a.error(c, http.StatusUnauthorized, "User with that email already exist")
+			return renderError(c, http.StatusUnauthorized, "User with that email already exist")
 		}
-		return a.error(c, http.StatusUnauthorized, "Could not create user")
+		return renderError(c, http.StatusUnauthorized, "Could not create user")
 	}
 
 	err = a.setTokenCookie(c, user)
 	if err != nil {
-		return a.error(c, http.StatusUnauthorized, "something went wrong please try again")
+		return renderError(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
 
 	return render(c, http.StatusCreated, pages.HomePageWithNavigation(user.Email))
@@ -106,10 +106,4 @@ func (a *AuthHandler) setTokenCookie(c echo.Context, user models.User) error {
 	c.SetCookie(cookie)
 
 	return nil
-}
-
-func (a *AuthHandler) error(c echo.Context, statusCode int, message string) error {
-	c.Response().Header().Set("HX-Retarget", "#auth-error")
-	c.Response().Header().Set("HX-Reswap", "outerHTML")
-	return render(c, statusCode, pages.AuthError(message))
 }

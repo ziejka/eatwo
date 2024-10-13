@@ -7,7 +7,7 @@ import (
 
 templ passwordForm(authType string, buttonText string) {
 	<div id="loading-overlay"></div>
-	<div id="auth-error" class="hidden"></div>
+	<div id="error-message" class="hidden"></div>
 	<form
 		hx-post={ string(templ.URL(fmt.Sprintf("/api/v1/%s", authType))) }
 		hx-indicator="#loading-overlay"
@@ -22,7 +22,7 @@ templ passwordForm(authType string, buttonText string) {
 			<label for="email">Password</label>
 			@components.Input("password", "password", "Complicated password", true)
 		</div>
-		@components.MButton(buttonText, components.Submit)
+		@components.MButton(buttonText, components.Submit, templ.Attributes{})
 	</form>
 }
 
@@ -38,10 +38,6 @@ templ LoginPage() {
 templ SignUpPage() {
   @title("Sign Up")
 	@passwordForm("sing-up", "Sign Up")
-}
-
-templ AuthError(message string) {
-	<p id="auth-error" class="text-red-500">{ message }</p>
 }
 
 templ Empty() {

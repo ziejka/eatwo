@@ -6,6 +6,7 @@ import (
 	"eatwo/handlers"
 	"eatwo/models"
 	"eatwo/shared"
+	"eatwo/views/components"
 	"eatwo/views/pages"
 	"fmt"
 	"net/http"
@@ -109,7 +110,7 @@ func TestAuthHandler_LogInPostHandler_WrongEmailOrPassword(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	pages.AuthError("Wrong email or password").Render(req.Context(), &buf)
+	components.ErrorMsg("Wrong email or password").Render(req.Context(), &buf)
 	expectedBody := buf.String()
 	body := rec.Body.String()
 	if !strings.Contains(body, expectedBody) {
@@ -139,7 +140,7 @@ func TestAuthHandler_LogInPostHandler_InternalServerError(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	pages.AuthError("something went wrong please try again").Render(req.Context(), &buf)
+	components.ErrorMsg("something went wrong please try again").Render(req.Context(), &buf)
 	expectedBody := buf.String()
 	body := rec.Body.String()
 	if !strings.Contains(body, expectedBody) {
@@ -193,7 +194,7 @@ func TestAuthHandler_SignUpPostHandler_UserWithEmailExist(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	pages.AuthError("User with that email already exist").Render(req.Context(), &buf)
+	components.ErrorMsg("User with that email already exist").Render(req.Context(), &buf)
 	expectedBody := buf.String()
 	body := rec.Body.String()
 	if !strings.Contains(body, expectedBody) {
@@ -220,7 +221,7 @@ func TestAuthHandler_SignUpPostHandler_InternalServerError(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	pages.AuthError("Could not create user").Render(req.Context(), &buf)
+	components.ErrorMsg("Could not create user").Render(req.Context(), &buf)
 	expectedBody := buf.String()
 	body := rec.Body.String()
 	if !strings.Contains(body, expectedBody) {

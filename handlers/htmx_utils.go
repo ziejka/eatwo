@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"eatwo/services"
+	"eatwo/views/components"
 	"eatwo/views/layouts"
 
 	"github.com/a-h/templ"
@@ -25,4 +26,10 @@ func renderHTMX(c echo.Context, statusCode int, t templ.Component, claims *servi
 		t = layouts.Base(claims, t)
 	}
 	return render(c, statusCode, t)
+}
+
+func renderError(c echo.Context, statusCode int, message string) error {
+	c.Response().Header().Set("HX-Retarget", "#error-message")
+	c.Response().Header().Set("HX-Reswap", "outerHTML")
+	return render(c, statusCode, components.ErrorMsg(message))
 }

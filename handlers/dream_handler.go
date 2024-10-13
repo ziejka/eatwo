@@ -5,6 +5,7 @@ import (
 	"eatwo/models"
 	"eatwo/services"
 	"eatwo/views/pages"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -14,14 +15,26 @@ type AIService interface {
 	Call(ctx context.Context, prompt string) (*models.AIResponse, error)
 }
 
-type DreamHandler struct {
-	aiService AIService
+type DreamService interface {
+	Create(ctx context.Context, prompt string, userID string) (*models.DreamRecord, error)
+	GetByUserID(ctx context.Context, userID string) ([]*models.DreamRecord, error)
+	UpdateExplanation(ctx context.Context, dreamID, explanation string, userID string) error
 }
 
-func NewDreamHandler(aiService AIService) *DreamHandler {
+type DreamHandler struct {
+	aiService    AIService
+	dreamService DreamService
+}
+
+func NewDreamHandler(aiService AIService, ds DreamService) *DreamHandler {
 	return &DreamHandler{
-		aiService: aiService,
+		aiService:    aiService,
+		dreamService: ds,
 	}
+}
+
+type DreamRequestBody struct {
+	Prompt string `form:"prompt"`
 }
 
 // /api/v1/dream
@@ -31,18 +44,35 @@ func (l *DreamHandler) PostDream(c echo.Context) error {
 		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
 	}
 
-	jwtClaims, ok := claims.(*services.CustomClaims)
+	customClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
 		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
 	}
 
-	prompt := c.QueryParam("prompt")
-
-	claude, err := l.aiService.Call(c.Request().Context(), prompt)
-	println(claude)
-	if err != nil {
-		c.Logger().Error(err)
+	var dreamRequestBody DreamRequestBody
+	if err := c.Bind(&dreamRequestBody); err != nil {
+		return renderError(c, http.StatusBadRequest, "Could not parse the request")
 	}
 
-	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Subject), jwtClaims)
+	if dreamRequestBody.Prompt == "" {
+		return renderError(c, http.StatusBadRequest, "Prompt cannot be empty")
+	}
+
+	dream, err := l.dreamService.Create(c.Request().Context(), dreamRequestBody.Prompt, customClaims.UserID)
+	if err != nil {
+		return renderError(c, http.StatusBadRequest, fmt.Sprint("Could not create dream: ", err))
+	}
+
+	resp, err := l.aiService.Call(c.Request().Context(), dream.Description)
+	if err != nil {
+		c.Logger().Error(err)
+		return renderError(c, http.StatusBadRequest, fmt.Sprint("Could not decode a dream: ", err))
+	}
+
+	err = l.dreamService.UpdateExplanation(c.Request().Context(), dream.ID, resp.Content, customClaims.UserID)
+	if err != nil {
+		return renderError(c, http.StatusBadRequest, fmt.Sprint("Could not update dream: ", err))
+	}
+
+	return render(c, http.StatusOK, pages.DreamPromptResponse(dream.Description, resp.Content))
 }

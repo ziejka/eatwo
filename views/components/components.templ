@@ -18,11 +18,26 @@ const (
 	Reset  ButtonType = "reset"
 )
 
-templ MButton(text string, buttonType ButtonType) {
+templ MButton(text string, buttonType ButtonType, attrs templ.Attributes) {
 	<button
 		type={ string(buttonType) }
 		class="w-full md:w-fit rounded-full bg-sky-500 text-sky-50 shadow-md shadow-sky-600 px-5 py-2 hover:shadow-lg hover:bg-sky-400 hover:shadow-sky-600 transition-all text-nowrap"
+		{ attrs... }
 	>
 		{ text }
 	</button>
+}
+
+templ Panel() {
+	<div class="panel md:m-4 p-4 bg-slate-100 md:rounded-lg shadow-md shadow-slate-300">
+		{ children... }
+	</div>
+}
+
+templ ErrorMsg(message string) {
+	<p id="error-message" class="text-red-500">{ message }</p>
+}
+
+templ ErrorPlaceholder() {
+	<div id="error-message" class="hidden"></div>
 }

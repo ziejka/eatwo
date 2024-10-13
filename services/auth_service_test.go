@@ -29,7 +29,6 @@ func getAuthUserService(t *testing.T) (*services.AuthService, func()) {
 
 	authService := services.NewAuthService(userRepository)
 
-	// Test case 2: User with the same email does not exist
 	_, err = authService.Create(context.Background(), models.UserSignUp{
 		UserLogIn: models.UserLogIn{
 			Email:    "existing@example.com",

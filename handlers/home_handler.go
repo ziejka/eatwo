@@ -25,19 +25,19 @@ func (h *Home) GetProtectedAbout(c echo.Context) error {
 		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
 	}
 
-	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Subject), jwtClaims)
+	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Email), jwtClaims)
 }
 
 func (h *Home) GetHome(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.HomePage(""), nil)
+		return renderHTMX(c, http.StatusOK, pages.HomePagePublic(), nil)
 	}
 
 	jwtClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
 		c.Logger().Error("Invalid claims type")
-		return renderHTMX(c, http.StatusOK, pages.HomePage(""), nil)
+		return renderHTMX(c, http.StatusOK, pages.HomePagePublic(), nil)
 	}
 	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Subject), jwtClaims)
 }

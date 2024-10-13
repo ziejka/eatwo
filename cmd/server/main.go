@@ -49,11 +49,20 @@ func main() {
 
 	aiService := services.NewMockAIService()
 
+	dreamRepository := db.NewDreamRepository(sqlDB)
+	err = dreamRepository.Migrate(context.Background())
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	dreamService := services.NewDreamService(dreamRepository)
+
 	s := handlers.Services{
 		UserAuthService:  userAuthService,
 		TokenGenerator:   services.GenerateToken,
 		CheckListService: checkListService,
 		AIService:        aiService,
+		DreamService:     dreamService,
 	}
 
 	// e.Use(middleware.Logger())

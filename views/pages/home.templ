@@ -1,16 +1,32 @@
 package pages
 
-import "eatwo/views/layouts"
+import (
+	"eatwo/views/components"
+	"eatwo/views/layouts"
+)
 
 templ HomePage(name string) {
-  <h1 class="text-gray-900 text-4xl font-bold">Hello, { name } decode your dreams</h1>
+	<h1 class="px-4 my-6 text-slate-900 text-2xl text-center font-semibold">
+		Welcome, { name }!
+		<br/>
+		Unveil the Secrets of Your Dreams Today
+	</h1>
+	@DreamPrompt("What did you dream about?")
 }
 
 templ HomePagePublic() {
-  <h1 class="text-gray-900 text-4xl font-bold">Dream decoder</h1>
+	<h1 class="px-4 mb-6 text-slate-900 text-4xl font-bold">Dream decoder</h1>
+	@components.Panel() {
+		<p class="mb-6 text-slate-900 text-lg font-normal">
+			Decode your dreams with the power of AI.
+			<br/>
+			Login to save your dreams and get more features.
+		</p>
+		@components.MButton("Login", "/login", templ.Attributes{"hx-get": "/login", "hx-target": "#main", "hx-push-url": "true"})
+	}
 }
 
-
+// Used only in auth handler
 templ HomePageWithNavigation(name string) {
 	if name == "" {
 		@layouts.UnlogNavigation()
@@ -20,4 +36,32 @@ templ HomePageWithNavigation(name string) {
 	<main id="main" hx-swap-oob="true">
 		@HomePage(name)
 	</main>
+}
+
+templ DreamPrompt(question string) {
+	<div id="dream-prompt">
+		<div id="error-message" class="hidden"></div>
+		@components.Panel() {
+			<h2 class="text-slate-900 font-semibold mb-4">{question}</h2>
+			<form
+				class="flex flex-col items-center justify-center gap-4"
+				hx-post="/api/v1/dream"
+				hx-target="#dream-prompt"
+				hx-swap="outerHTML"
+			>
+				<textarea name="prompt" id="prompt" cols="30" rows="5" class="w-full rounded-lg block shadow"></textarea>
+				@components.MButton("Decode", "submit", templ.Attributes{})
+			</form>
+		}
+	</div>
+}
+
+templ DreamPromptResponse(dream string, response string) {
+	@components.Panel() {
+		<p class="text-slate-600 mb-4 italic">{ dream }</p>
+		<p class="text-slate-900">{ response } </p>
+	}
+	<div class="mt-2">
+		@DreamPrompt("Ask more about this dream")
+	</div>
 }

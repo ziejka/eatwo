@@ -12,13 +12,14 @@ type Services struct {
 	TokenGenerator   TokenGenerator
 	CheckListService CheckListService
 	AIService        AIService
+	DreamService     DreamService
 }
 
 func SetRoutes(e *echo.Echo, services Services) {
 	homeHandler := NewHome()
 	authHandler := NewAuthHandler(services.UserAuthService, services.TokenGenerator)
 	checkListHandler := NewCheckListHandler(services.CheckListService)
-	dreamHander := NewDreamHandler(services.AIService)
+	dreamHander := NewDreamHandler(services.AIService, services.DreamService)
 
 	// home routes
 	e.GET("/", homeHandler.GetHome)

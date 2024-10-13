@@ -2,7 +2,7 @@ document.body.addEventListener('htmx:beforeSwap', function(evt) {
   if (evt.detail.xhr.status === 404) {
     // alert the user when a 404 occurs (maybe use a nicer mechanism than alert())
     alert("Error: Could Not Find Resource");
-  } else if ([422, 409, 401].includes(evt.detail.xhr.status)) {
+  } else if ([422, 409, 400, 401].includes(evt.detail.xhr.status)) {
     // allow 422 responses to swap as we are using this as a signal that
     // a form was submitted with bad data and want to rerender with the
     // errors
