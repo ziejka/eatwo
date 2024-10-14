@@ -7,7 +7,7 @@ import (
 )
 
 templ HomePage(name string, dreams []*models.DreamRecord) {
-	<h1 class="px-4 my-6 text-slate-900 text-2xl text-center font-semibold">
+	<h1 class="px-4 my-6 text-2xl text-center font-semibold">
 		Welcome, { name }!
 		<br/>
 		Unveil the Secrets of Your Dreams Today
@@ -19,9 +19,9 @@ templ HomePage(name string, dreams []*models.DreamRecord) {
 }
 
 templ HomePagePublic() {
-	<h1 class="px-4 mb-6 text-slate-900 text-4xl font-bold">Dream decoder</h1>
+	<h1 class="px-4 mb-6 text-4xl font-bold">Dream decoder</h1>
 	@components.Panel() {
-		<p class="mb-6 text-slate-900 text-lg font-normal">
+		<p class="mb-6 text-lg font-normal">
 			Decode your dreams with the power of AI.
 			<br/>
 			Login to save your dreams and get more features.
@@ -34,26 +34,29 @@ templ HomePagePublic() {
 templ HomePageWithNavigation(name string) {
 	if name == "" {
 		@layouts.UnlogNavigation()
+		<main id="main" hx-swap-oob="true">
+			@HomePagePublic()
+		</main>
 	} else {
 		@layouts.LoggedNavigation()
+		<main id="main" hx-swap-oob="true">
+			@HomePage(name, nil)
+		</main>
 	}
-	<main id="main" hx-swap-oob="true">
-		@HomePage(name, nil)
-	</main>
 }
 
 templ DreamPrompt(question string) {
 	<div id="dream-prompt" class="mt-2">
 		<div id="error-message" class="hidden"></div>
 		@components.Panel() {
-			<h2 class="text-slate-900 font-semibold mb-4">{ question }</h2>
+			<h2 class="text-mirage-100 font-semibold mb-4">{ question }</h2>
 			<form
 				class="flex flex-col items-center justify-center gap-4"
 				hx-post="/api/v1/dream"
 				hx-target="#dream-prompt"
 				hx-swap="outerHTML"
 			>
-				<textarea name="prompt" id="prompt" cols="30" rows="5" class="w-full rounded-lg block shadow"></textarea>
+				@components.TextArea("prompt", "I was flying...", true)
 				@components.MButton("Decode", "submit", templ.Attributes{})
 			</form>
 		}
@@ -61,12 +64,10 @@ templ DreamPrompt(question string) {
 }
 
 templ DreamExplained(dream string, response string) {
-	<div class="mt-2">
-		@components.Panel() {
-			<p class="text-slate-600 mb-4 italic">{ dream }</p>
-			<p class="text-slate-900">{ response } </p>
-		}
-	</div>
+	@components.Panel() {
+		<p class="text-mirage-300 text-right mb-4 italic">{ dream }</p>
+		<p class="">{ response } </p>
+	}
 }
 
 templ DreamPromptResponse(dream string, response string) {

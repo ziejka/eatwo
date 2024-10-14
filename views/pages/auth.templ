@@ -8,22 +8,24 @@ import (
 templ passwordForm(authType string, buttonText string) {
 	<div id="loading-overlay"></div>
 	<div id="error-message" class="hidden"></div>
-	<form
-		hx-post={ string(templ.URL(fmt.Sprintf("/api/v1/%s", authType))) }
-		hx-indicator="#loading-overlay"
-		class="grid gap-4 w-80 mx-auto rounded-lg shadow-md shadow-slate-300 p-4 bg-slate-100"
-		hx-target="#main"
-	>
-		<div class="grid gap-1">
-			<label for="email">Email</label>
-			@components.Input("email", "text", "anna@email.com", true)
-		</div>
-		<div class="grid gap-1">
-			<label for="email">Password</label>
-			@components.Input("password", "password", "Complicated password", true)
-		</div>
-		@components.MButton(buttonText, components.Submit, templ.Attributes{})
-	</form>
+	@components.Panel() {
+		<form
+			hx-post={ string(templ.URL(fmt.Sprintf("/api/v1/%s", authType))) }
+			hx-indicator="#loading-overlay"
+			class="grid gap-4 w-80 mx-auto rounded-lg p-4"
+			hx-target="#main"
+		>
+			<div class="grid gap-1">
+				<label for="email">Email</label>
+				@components.Input("email", "text", "anna@email.com", true)
+			</div>
+			<div class="grid gap-1">
+				<label for="email">Password</label>
+				@components.Input("password", "password", "Complicated password", true)
+			</div>
+			@components.MButton(buttonText, components.Submit, templ.Attributes{})
+		</form>
+	}
 }
 
 templ title(text string) {
@@ -31,12 +33,12 @@ templ title(text string) {
 }
 
 templ LoginPage() {
-  @title("Log In")
+	@title("Log In")
 	@passwordForm("login", "Log In")
 }
 
 templ SignUpPage() {
-  @title("Sign Up")
+	@title("Sign Up")
 	@passwordForm("sing-up", "Sign Up")
 }
 

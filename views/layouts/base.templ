@@ -13,7 +13,7 @@ templ Base(claims *services.CustomClaims, children ...templ.Component) {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<script src="/js/htmx.min.js"></script>
 		</head>
-		<body class="font-serif relative bg-slate-200 text-slate-800">
+		<body class="font-serif relative bg-storm-gray-950 text-mirage-200">
 			<header class="fixed bottom-0 w-full">
 				if claims == nil {
 					@UnlogNavigation()
@@ -32,7 +32,7 @@ templ Base(claims *services.CustomClaims, children ...templ.Component) {
 }
 
 templ Navigation() {
-	<nav id="nav" class="flex gap-4 bg-slate-300 px-4 pt-4 md:rounded-lg shadow-mobile-nav md:shadow-md" hx-swap-oob="true">
+	<nav id="nav" class="flex gap-4 bg-wild-sand-950 px-4 pt-4 md:rounded-lg shadow-mobile-nav md:shadow-md" hx-swap-oob="true">
 		@NavLink("/", "Home")
 		{ children... }
 	</nav>
@@ -55,7 +55,7 @@ templ LoggedNavigation() {
 
 templ NavLink(url string, text string) {
 	<a
-		class="cursor-pointer font-medium text-slate-600 pb-4 border-b border-b-transparent hover:text-slate-900 hover:border-b-sky-800 transition-all"
+		class="cursor-pointer font-medium text-wild-sand-200 pb-4 border-b border-b-transparent hover:text-wild-sand-100 hover:border-b-the-blue-800 transition-all"
 		hx-target="#main"
 		hx-push-url="true"
 		hx-get={ url }
@@ -64,7 +64,7 @@ templ NavLink(url string, text string) {
 
 templ NavLogoutLink() {
 	<a
-		class="cursor-pointer font-medium text-slate-600 pb-4 border-b border-b-transparent hover:text-slate-900 hover:border-b-sky-800 transition-all ml-auto"
+		class="cursor-pointer font-medium text-wild-sand-300 pb-4 border-b border-b-transparent hover:text-wild-sand-100 hover:border-b-the-blue-800 transition-all ml-auto"
 		hx-target="#main"
 		hx-delete="/api/v1/logout"
 	>Logout</a>
