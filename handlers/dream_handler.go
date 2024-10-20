@@ -16,8 +16,8 @@ type AIService interface {
 }
 
 type DreamUpdater interface {
-	Create(ctx context.Context, prompt string, userID string) (*models.DreamRecord, error)
-	GetByUserID(ctx context.Context, userID string) ([]*models.DreamRecord, error)
+	Create(ctx context.Context, prompt string, userID string) (*models.Dream, error)
+	GetByUserID(ctx context.Context, userID string) ([]models.Dream, error)
 	UpdateExplanation(ctx context.Context, dreamID, explanation string, userID string) error
 }
 

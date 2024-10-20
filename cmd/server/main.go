@@ -31,12 +31,6 @@ func main() {
 
 	repository := db.New(sqlDB)
 
-	userRepository := db.NewUserRepository(sqlDB)
-	err = userRepository.Migrate(context.Background())
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
 	userAuthService := services.NewAuthService(repository)
 
 	checkListRepository := db.NewCheckListRepository(sqlDB)
@@ -50,14 +44,7 @@ func main() {
 	defer e.Close()
 
 	aiService := services.NewMockAIService()
-
-	dreamRepository := db.NewDreamRepository(sqlDB)
-	err = dreamRepository.Migrate(context.Background())
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	dreamService := services.NewDreamService(dreamRepository)
+	dreamService := services.NewDreamService(repository)
 
 	s := handlers.Services{
 		UserAuthService:  userAuthService,

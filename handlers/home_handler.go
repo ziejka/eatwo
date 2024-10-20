@@ -11,7 +11,7 @@ import (
 )
 
 type DreamGetter interface {
-	GetByUserID(ctx context.Context, userID string) ([]*models.DreamRecord, error)
+	GetByUserID(ctx context.Context, userID string) ([]*models.Dream, error)
 }
 type Home struct {
 	dreamGetter DreamGetter

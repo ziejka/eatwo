@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type DreamRecord struct {
+type Dream struct {
 	ID             string
 	UserID         string
 	Description    string
