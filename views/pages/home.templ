@@ -6,7 +6,7 @@ import (
 	"eatwo/views/layouts"
 )
 
-templ HomePage(name string, dreams []*models.DreamRecord) {
+templ HomePage(name string, dreams []models.Dream) {
 	<h1 class="px-4 my-6 text-2xl text-center font-semibold">
 		Welcome, { name }!
 		<br/>
@@ -49,7 +49,7 @@ templ DreamPrompt(question string) {
 	<div id="dream-prompt" class="mt-2">
 		<div id="error-message" class="hidden"></div>
 		@components.Panel() {
-			<h2 class="text-mirage-100 font-semibold mb-4">{ question }</h2>
+			<h2 class="font-semibold mb-4">{ question }</h2>
 			<form
 				class="flex flex-col items-center justify-center gap-4"
 				hx-post="/api/v1/dream"
