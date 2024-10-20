@@ -29,13 +29,15 @@ func main() {
 	}
 	defer sqlDB.Close()
 
+	repository := db.New(sqlDB)
+
 	userRepository := db.NewUserRepository(sqlDB)
 	err = userRepository.Migrate(context.Background())
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	userAuthService := services.NewAuthService(userRepository)
+	userAuthService := services.NewAuthService(repository)
 
 	checkListRepository := db.NewCheckListRepository(sqlDB)
 	err = checkListRepository.Migrate(context.Background())

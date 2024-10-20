@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"eatwo/db"
 	"eatwo/models"
 	"eatwo/shared"
 	"errors"
@@ -11,8 +12,8 @@ import (
 )
 
 type UserRepository interface {
-	Create(ctx context.Context, user *models.UserRecord) error
-	GetByEmail(ctx context.Context, email string) (*models.UserRecord, error)
+	CreateUser(ctx context.Context, arg db.CreateUserParams) (db.User, error)
+	GetUser(ctx context.Context, email string) (db.User, error)
 }
 
 type AuthService struct {
@@ -26,7 +27,7 @@ func NewAuthService(userRepository UserRepository) *AuthService {
 }
 
 func (a *AuthService) Validate(ctx context.Context, logInData models.UserLogIn) (models.User, error) {
-	user, err := a.userRepository.GetByEmail(ctx, logInData.Email)
+	user, err := a.userRepository.GetUser(ctx, logInData.Email)
 	if err != nil {
 		if errors.Is(err, shared.ErrNotExists) {
 			return models.User{}, shared.ErrUserWrongEmailOrPassword
@@ -39,11 +40,15 @@ func (a *AuthService) Validate(ctx context.Context, logInData models.UserLogIn) 
 		return models.User{}, shared.ErrUserWrongEmailOrPassword
 	}
 
-	return user.User, nil
+	return models.User{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+	}, nil
 }
 
 func (a *AuthService) Create(ctx context.Context, signUpData models.UserSignUp) (models.User, error) {
-	_, err := a.userRepository.GetByEmail(ctx, signUpData.Email)
+	_, err := a.userRepository.GetUser(ctx, signUpData.Email)
 	if err == nil {
 		return models.User{}, shared.ErrUserWithEmailExist
 	}
@@ -56,18 +61,21 @@ func (a *AuthService) Create(ctx context.Context, signUpData models.UserSignUp) 
 		return models.User{}, err
 	}
 
-	userRecord := &models.UserRecord{
-		User: models.User{
-			ID:    uuid.NewString(),
-			Name:  signUpData.Name,
-			Email: signUpData.Email,
-		},
+	createUserParams := db.CreateUserParams{
+		ID:           uuid.NewString(),
+		Name:         signUpData.Name,
+		Email:        signUpData.Email,
 		HashPassword: string(hashedPassword),
 	}
+	user, err := a.userRepository.CreateUser(ctx, createUserParams)
 
-	if err = a.userRepository.Create(ctx, userRecord); err != nil {
+	if err != nil {
 		return models.User{}, err
 	}
 
-	return userRecord.User, nil
+	return models.User{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+	}, nil
 }
