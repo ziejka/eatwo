@@ -12,3 +12,6 @@ test:
 
 db: 
 	sqlc generate
+
+tailwind:
+	npm run watch
