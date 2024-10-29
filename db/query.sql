@@ -37,3 +37,47 @@ WHERE
   user_id = ?
 ORDER BY
   date;
+
+-- name: GetCheckListByUser :many
+SELECT
+  l.id,
+  l.user_id,
+  l.name
+FROM
+  lists l
+WHERE
+  l.user_id = ?;
+
+-- name: GetListWithItemsByListId :many
+SELECT
+  l.id,
+  l.name,
+  i.id,
+  i."value"
+FROM
+  lists l
+  JOIN items i ON i.list_id = l.id
+WHERE
+  l.id = ?
+  AND l.user_id = ?;
+
+-- name: CreateList :one
+INSERT INTO
+  lists (name, user_id)
+VALUES
+  (?, ?) RETURNING *;
+
+-- name: GetListIDByUser :many
+SELECT
+  id
+FROM
+  lists
+WHERE
+  id = ?
+  AND user_id = ?;
+
+-- name: CreateItem :one
+INSERT INTO
+  items (value, list_id)
+VALUES
+  (?, ?) RETURNING *;

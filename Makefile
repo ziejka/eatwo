@@ -9,3 +9,6 @@ templ:
 
 test:
 	go test ./...
+
+db: 
+	sqlc generate

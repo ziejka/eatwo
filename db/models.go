@@ -12,6 +12,18 @@ type Dream struct {
 	Date        string
 }
 
+type Item struct {
+	ID     int64
+	Value  string
+	ListID int64
+}
+
+type List struct {
+	ID     int64
+	Name   string
+	UserID string
+}
+
 type User struct {
 	ID           string
 	Email        string

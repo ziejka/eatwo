@@ -32,17 +32,7 @@ func main() {
 	repository := db.New(sqlDB)
 
 	userAuthService := services.NewAuthService(repository)
-
-	checkListRepository := db.NewCheckListRepository(sqlDB)
-	err = checkListRepository.Migrate(context.Background())
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	checkListService := services.NewCheckListService(checkListRepository)
-	e := echo.New()
-	defer e.Close()
-
+	checkListService := services.NewCheckListService(repository)
 	aiService := services.NewMockAIService()
 	dreamService := services.NewDreamService(repository)
 
@@ -54,6 +44,8 @@ func main() {
 		DreamService:     dreamService,
 	}
 
+	e := echo.New()
+	defer e.Close()
 	// e.Use(middleware.Logger())
 	e.Logger.SetLevel(gLog.DEBUG)
 	e.Use(services.JWTMiddleware)

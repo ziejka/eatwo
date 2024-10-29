@@ -43,6 +43,44 @@ func (q *Queries) CreateDream(ctx context.Context, arg CreateDreamParams) (Dream
 	return i, err
 }
 
+const createItem = `-- name: CreateItem :one
+INSERT INTO
+  items (value, list_id)
+VALUES
+  (?, ?) RETURNING id, value, list_id
+`
+
+type CreateItemParams struct {
+	Value  string
+	ListID int64
+}
+
+func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, error) {
+	row := q.db.QueryRowContext(ctx, createItem, arg.Value, arg.ListID)
+	var i Item
+	err := row.Scan(&i.ID, &i.Value, &i.ListID)
+	return i, err
+}
+
+const createList = `-- name: CreateList :one
+INSERT INTO
+  lists (name, user_id)
+VALUES
+  (?, ?) RETURNING id, name, user_id
+`
+
+type CreateListParams struct {
+	Name   string
+	UserID string
+}
+
+func (q *Queries) CreateList(ctx context.Context, arg CreateListParams) (List, error) {
+	row := q.db.QueryRowContext(ctx, createList, arg.Name, arg.UserID)
+	var i List
+	err := row.Scan(&i.ID, &i.Name, &i.UserID)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO
   users (id, email, name, hash_password)
@@ -74,6 +112,46 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const getCheckListByUser = `-- name: GetCheckListByUser :many
+SELECT
+  l.id,
+  l.user_id,
+  l.name
+FROM
+  lists l
+WHERE
+  l.user_id = ?
+`
+
+type GetCheckListByUserRow struct {
+	ID     int64
+	UserID string
+	Name   string
+}
+
+func (q *Queries) GetCheckListByUser(ctx context.Context, userID string) ([]GetCheckListByUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getCheckListByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetCheckListByUserRow
+	for rows.Next() {
+		var i GetCheckListByUserRow
+		if err := rows.Scan(&i.ID, &i.UserID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getDreams = `-- name: GetDreams :many
 SELECT
   id, user_id, description, explanation, date
@@ -100,6 +178,98 @@ func (q *Queries) GetDreams(ctx context.Context, userID string) ([]Dream, error)
 			&i.Description,
 			&i.Explanation,
 			&i.Date,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getListIDByUser = `-- name: GetListIDByUser :many
+SELECT
+  id
+FROM
+  lists
+WHERE
+  id = ?
+  AND user_id = ?
+`
+
+type GetListIDByUserParams struct {
+	ID     int64
+	UserID string
+}
+
+func (q *Queries) GetListIDByUser(ctx context.Context, arg GetListIDByUserParams) ([]int64, error) {
+	rows, err := q.db.QueryContext(ctx, getListIDByUser, arg.ID, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []int64
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getListWithItemsByListId = `-- name: GetListWithItemsByListId :many
+SELECT
+  l.id,
+  l.name,
+  i.id,
+  i."value"
+FROM
+  lists l
+  JOIN items i ON i.list_id = l.id
+WHERE
+  l.id = ?
+  AND l.user_id = ?
+`
+
+type GetListWithItemsByListIdParams struct {
+	ID     int64
+	UserID string
+}
+
+type GetListWithItemsByListIdRow struct {
+	ID    int64
+	Name  string
+	ID_2  int64
+	Value string
+}
+
+func (q *Queries) GetListWithItemsByListId(ctx context.Context, arg GetListWithItemsByListIdParams) ([]GetListWithItemsByListIdRow, error) {
+	rows, err := q.db.QueryContext(ctx, getListWithItemsByListId, arg.ID, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetListWithItemsByListIdRow
+	for rows.Next() {
+		var i GetListWithItemsByListIdRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ID_2,
+			&i.Value,
 		); err != nil {
 			return nil, err
 		}
