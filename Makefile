@@ -7,10 +7,13 @@ dev-s:
 templ:
 	templ generate --watch --proxy="http://localhost:8080" --cmd="go run cmd/server/main.go"
 
+templ-s:
+	templ generate --watch --proxy="http://localhost:8080" 
+
 test:
 	go test ./...
 
-db: 
+sqlc: 
 	sqlc generate
 
 tailwind:

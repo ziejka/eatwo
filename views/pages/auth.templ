@@ -1,16 +1,20 @@
 package pages
 
 import (
+	"eatwo/models"
 	"eatwo/views/components"
-	"fmt"
+	"eatwo/views/layouts"
 )
 
-templ passwordForm(authType string, buttonText string) {
-	<div id="loading-overlay"></div>
-	<div id="error-message" class="hidden"></div>
+templ title(text string) {
+	<h1 class="text-xl font-bold text-center mb-4 mt-20">{ text }</h1>
+}
+
+templ LoginPage() {
+	@title("Log In")
 	@components.Panel() {
 		<form
-			hx-post={ string(templ.URL(fmt.Sprintf("/api/v1/%s", authType))) }
+			hx-post="/api/v1/login"
 			hx-indicator="#loading-overlay"
 			class="grid gap-4 w-80 mx-auto rounded-lg p-4"
 			hx-target="#main"
@@ -23,24 +27,74 @@ templ passwordForm(authType string, buttonText string) {
 				<label for="email">Password</label>
 				@components.Input("password", "password", "Complicated password", true)
 			</div>
-			@components.MButton(buttonText, components.Submit, templ.Attributes{})
+			<div class="mx-center w-full mt-5">
+				@components.MButton("Log In", components.Submit, templ.Attributes{})
+			</div>
+			<div class="mx-auto">
+				@layouts.NavLink("/sing-up", "or Sing Up")
+			</div>
 		</form>
 	}
 }
 
-templ title(text string) {
-	<h1 class="text-xl font-bold text-center mb-4 mt-20">{ text }</h1>
-}
-
-templ LoginPage() {
-	@title("Log In")
-	@passwordForm("login", "Log In")
-}
-
 templ SignUpPage() {
 	@title("Sign Up")
-	@passwordForm("sing-up", "Sign Up")
+	@components.Panel() {
+		<form
+			hx-post="/api/v1/sing-up"
+			hx-indicator="#loading-overlay"
+			class="grid gap-4 w-80 mx-auto rounded-lg p-4"
+			hx-target="#main"
+		>
+			<div class="grid gap-1">
+				<label for="email">Email</label>
+				@components.Input("email", "text", "anna@email.com", true)
+			</div>
+			<div class="grid gap-1">
+				<label for="name">Name</label>
+				@components.Input("name", "text", "Anna", true)
+			</div>
+			<div class="grid gap-1">
+				<label for="email">Password</label>
+				@components.Input("password", "password", "Complicated password", true)
+			</div>
+			<div class="flex gap-2 items-center align-middle">
+				@components.MButton("Sign Up", components.Submit, templ.Attributes{})
+			</div>
+			<div class="mx-auto">
+				@layouts.NavLink("/login", "or Log In")
+			</div>
+		</form>
+	}
 }
 
 templ Empty() {
+}
+
+templ AccountSettings(u models.User) {
+	@title("Account Settings test")
+	@components.Panel() {
+		<form
+			class="grid gap-4"
+			hx-post="/api/v1/account-settings/user"
+			hx-indicator="#loading-overlay"
+			hx-target="#main"
+		>
+			<div class="grid gap-2">
+				<label class="text-mirage-300" for="name">Name</label>
+				@components.Input2("name", "text", u.Name, true, templ.Attributes{"value": u.Name})
+			</div>
+			<div class="grid gap-2">
+				<label class="text-mirage-300" for="email">Email</label>
+				@components.Input2("email", "text", u.Email, true, templ.Attributes{"value": u.Email})
+			</div>
+			<div class="mt-6">
+				@components.MButton("Update", components.Submit, templ.Attributes{})
+			</div>
+		</form>
+		<div class="mt-6">
+			<p class="text-mirage-300">Delete account and all related data</p>
+			@components.MDangerButton("Delete", components.Button, templ.Attributes{"hx-delete": "/api/v1/account-settings/user"})
+		</div>
+	}
 }

@@ -8,24 +8,31 @@ import (
 
 type TokenGenerator func(user models.User) (string, error)
 type Services struct {
-	UserAuthService  UserAuthService
-	TokenGenerator   TokenGenerator
-	CheckListService CheckListService
 	AIService        AIService
+	CheckListService CheckListService
 	DreamService     DreamUpdater
+	TokenGenerator   TokenGenerator
+	UserAuthService  UserAuthService
+  SettingsService  SettingsService
 }
 
 func SetRoutes(e *echo.Echo, services Services) {
-	homeHandler := NewHome(services.DreamService)
 	authHandler := NewAuthHandler(services.UserAuthService, services.TokenGenerator)
 	checkListHandler := NewCheckListHandler(services.CheckListService)
 	dreamHander := NewDreamHandler(services.AIService, services.DreamService)
+	homeHandler := NewHome(services.DreamService)
+	settings := NewSettingsHandler(services.SettingsService)
 
 	// home routes
 	e.GET("/", homeHandler.GetHome)
 	e.GET("/about", homeHandler.GetProtectedAbout)
 	e.GET("/sing-up", homeHandler.GetSignUp)
 	e.GET("/login", homeHandler.GetLogIn)
+
+	// account settings
+	e.GET("/account-settings", settings.GetAccountSettings)
+	e.POST("/api/v1/account-settings/user", settings.PostUserUpdate)
+  e.DELETE("/api/v1/account-settings/user", settings.DeleteUser)
 
 	// dream routes
 	e.POST("/api/v1/dream", dreamHander.PostDream)
@@ -38,6 +45,6 @@ func SetRoutes(e *echo.Echo, services Services) {
 
 	// Auth
 	e.POST("/api/v1/sing-up", authHandler.PostSignUp)
-	e.POST("/api/v1/login", authHandler.PostLogIn)
+	e.POST("/api/v1/user", authHandler.PostLogIn)
 	e.DELETE("/api/v1/logout", authHandler.DeleteLogout)
 }

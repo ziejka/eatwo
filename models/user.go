@@ -11,6 +11,11 @@ type UserLogIn struct {
 	Password string `form:"password"`
 }
 
+type UserUpdate struct {
+	Email string `form:"email"`
+	Name  string `form:"name"`
+}
+
 type UserSignUp struct {
 	UserLogIn
 	Name string `form:"name"`

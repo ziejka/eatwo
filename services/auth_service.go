@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"database/sql"
 	"eatwo/db"
 	"eatwo/models"
 	"eatwo/shared"
@@ -29,7 +30,7 @@ func NewAuthService(userRepository UserRepository) *AuthService {
 func (a *AuthService) Validate(ctx context.Context, logInData models.UserLogIn) (models.User, error) {
 	user, err := a.userRepository.GetUser(ctx, logInData.Email)
 	if err != nil {
-		if errors.Is(err, shared.ErrNotExists) {
+		if errors.Is(err, sql.ErrNoRows) {
 			return models.User{}, shared.ErrUserWrongEmailOrPassword
 		}
 		return models.User{}, err
@@ -52,12 +53,15 @@ func (a *AuthService) Create(ctx context.Context, signUpData models.UserSignUp) 
 	if err == nil {
 		return models.User{}, shared.ErrUserWithEmailExist
 	}
-	if !errors.Is(err, shared.ErrNotExists) {
+	println(err.Error())
+
+	if !errors.Is(err, sql.ErrNoRows) {
 		return models.User{}, shared.ErrDefaultInternal
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(signUpData.Password), bcrypt.MinCost)
 	if err != nil {
+
 		return models.User{}, err
 	}
 

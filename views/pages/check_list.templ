@@ -7,7 +7,6 @@ import (
 )
 
 templ CheckLists(checkLists []models.CheckListRecord) {
-	<div id="loading-overlay"></div>
 	@components.Panel() {
 		<form hx-post="/api/v1/check-list" hx-indicator="#loading-overlay" hx-target="#main">
 			<div class="flex flex-col md:flex-row gap-2 items-center">
@@ -35,7 +34,6 @@ templ CheckLists(checkLists []models.CheckListRecord) {
 }
 
 templ CheckList(list *models.ListWithItems) {
-	<div id="loading-overlay"></div>
 	<h1 class="text-2xl font-bold mb-4 ">{ list.Name }</h1>
 	@components.Panel() {
 		<form

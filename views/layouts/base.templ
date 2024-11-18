@@ -21,6 +21,8 @@ templ Base(claims *services.CustomClaims, children ...templ.Component) {
 					@LoggedNavigation()
 				}
 			</header>
+			<div id="loading-overlay"></div>
+			<div id="error-message" class="hidden"></div>
 			<main id="main" class="pb-20 md:pb-0">
 				for _, child := range children {
 					@child
@@ -49,6 +51,7 @@ templ LoggedNavigation() {
 	@Navigation() {
 		@NavLink("/check-list", "CheckLists")
 		@NavLink("/about", "About")
+		@NavLink("/account-settings", "Settings")
 		@NavLogoutLink()
 	}
 }

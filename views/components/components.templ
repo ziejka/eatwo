@@ -1,8 +1,20 @@
 package components
 
+templ Input2(name string, inputType string, placeholder string, required bool, attrs templ.Attributes) {
+	<input
+		class="w-full md:w-fit bg-mirage-900 border-2 border-wild-sand-600 shadow-md rounded-full px-4 py-2 hover:shadow-lg transition-all focus:shadow-lg"
+		name={ name }
+		type={ inputType }
+		required?={ required }
+		placeholder={ placeholder }
+    { attrs... }
+	/>
+}
+
+
 templ Input(name string, inputType string, placeholder string, required bool) {
 	<input
-		class="w-full md:w-fit bg-mirage-900 border border-mirage-700 shadow-md rounded-full px-4 py-2 hover:shadow-lg transition-all focus:shadow-lg"
+		class="w-full md:w-fit bg-mirage-900 border-2 border-wild-sand-600 shadow-md rounded-full px-4 py-2 hover:shadow-lg transition-all focus:shadow-lg"
 		name={ name }
 		type={ inputType }
 		required?={ required }
@@ -26,13 +38,22 @@ type ButtonType string
 const (
 	Submit ButtonType = "submit"
 	Button ButtonType = "button"
-	Reset  ButtonType = "reset"
 )
 
 templ MButton(text string, buttonType ButtonType, attrs templ.Attributes) {
 	<button
 		type={ string(buttonType) }
 		class="w-full md:w-fit rounded-full bg-the-blue-800 shadow-md px-5 py-2 hover:shadow-lg hover:bg-the-blue-700 transition-all text-nowrap"
+		{ attrs... }
+	>
+		{ text }
+	</button>
+}
+
+templ MDangerButton(text string, buttonType ButtonType, attrs templ.Attributes) {
+	<button
+		type={ string(buttonType) }
+		class="w-full md:w-fit rounded-full bg-storm-gray-800 shadow-md px-5 py-2 hover:shadow-lg hover:bg-storm-gray-700 transition-all text-nowrap"
 		{ attrs... }
 	>
 		{ text }

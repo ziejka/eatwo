@@ -14,11 +14,39 @@ INSERT INTO
 VALUES
   (?, ?, ?, ?) RETURNING *;
 
+-- name: GetUserByID :one
+SELECT
+  *
+FROM
+  users
+WHERE
+  id = ?
+LIMIT
+  1;
+
+-- name: DeleteUser :exec
+DELETE FROM users
+WHERE
+  id = ?;
+
+-- name: UpdateUser :one
+UPDATE users
+SET
+  email = ?,
+  name = ?
+WHERE
+  id = ? RETURNING *;
+
 -- name: CreateDream :one
 INSERT INTO
   dreams (id, user_id, description, explanation, date)
 VALUES
   (?, ?, ?, ?, ?) RETURNING *;
+
+-- name: DeleteDreamsForUser :exec
+DELETE FROM dreams
+WHERE
+  user_id = ?;
 
 -- name: UpdateDreamExplanation :one
 UPDATE dreams
@@ -61,6 +89,11 @@ WHERE
   l.id = ?
   AND l.user_id = ?;
 
+-- name: DeleteListsForUser :exec
+DELETE FROM lists
+WHERE
+  user_id = ?;
+
 -- name: CreateList :one
 INSERT INTO
   lists (name, user_id)
@@ -81,3 +114,15 @@ INSERT INTO
   items (value, list_id)
 VALUES
   (?, ?) RETURNING *;
+
+-- name: DeleteItemsForUser :exec
+DELETE FROM items
+WHERE
+  list_id IN (
+    SELECT
+      id
+    FROM
+      lists
+    WHERE
+      user_id = ?
+  );

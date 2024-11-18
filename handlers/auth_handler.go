@@ -72,11 +72,13 @@ func (a *AuthHandler) PostSignUp(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
 	}
 
+  c.Logger().Infof("signUpData: %+v", signUpData)
 	user, err := a.userAuthService.Create(c.Request().Context(), signUpData)
 	if err != nil {
 		c.Logger().Error(err.Error())
 
 		if errors.Is(err, shared.ErrUserWithEmailExist) {
+      // TODO: Don't expose this information to the user
 			return renderError(c, http.StatusUnauthorized, "User with that email already exist")
 		}
 		return renderError(c, http.StatusUnauthorized, "Could not create user")

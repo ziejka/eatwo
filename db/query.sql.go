@@ -112,6 +112,57 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const deleteDreamsForUser = `-- name: DeleteDreamsForUser :exec
+DELETE FROM dreams
+WHERE
+  user_id = ?
+`
+
+func (q *Queries) DeleteDreamsForUser(ctx context.Context, userID string) error {
+	_, err := q.db.ExecContext(ctx, deleteDreamsForUser, userID)
+	return err
+}
+
+const deleteItemsForUser = `-- name: DeleteItemsForUser :exec
+DELETE FROM items
+WHERE
+  list_id IN (
+    SELECT
+      id
+    FROM
+      lists
+    WHERE
+      user_id = ?
+  )
+`
+
+func (q *Queries) DeleteItemsForUser(ctx context.Context, userID string) error {
+	_, err := q.db.ExecContext(ctx, deleteItemsForUser, userID)
+	return err
+}
+
+const deleteListsForUser = `-- name: DeleteListsForUser :exec
+DELETE FROM lists
+WHERE
+  user_id = ?
+`
+
+func (q *Queries) DeleteListsForUser(ctx context.Context, userID string) error {
+	_, err := q.db.ExecContext(ctx, deleteListsForUser, userID)
+	return err
+}
+
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM users
+WHERE
+  id = ?
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, id)
+	return err
+}
+
 const getCheckListByUser = `-- name: GetCheckListByUser :many
 SELECT
   l.id,
@@ -307,6 +358,29 @@ func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
 	return i, err
 }
 
+const getUserByID = `-- name: GetUserByID :one
+SELECT
+  id, email, name, hash_password
+FROM
+  users
+WHERE
+  id = ?
+LIMIT
+  1
+`
+
+func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.HashPassword,
+	)
+	return i, err
+}
+
 const updateDreamExplanation = `-- name: UpdateDreamExplanation :one
 UPDATE dreams
 SET
@@ -331,6 +405,33 @@ func (q *Queries) UpdateDreamExplanation(ctx context.Context, arg UpdateDreamExp
 		&i.Description,
 		&i.Explanation,
 		&i.Date,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+UPDATE users
+SET
+  email = ?,
+  name = ?
+WHERE
+  id = ? RETURNING id, email, name, hash_password
+`
+
+type UpdateUserParams struct {
+	Email string
+	Name  string
+	ID    string
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUser, arg.Email, arg.Name, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.HashPassword,
 	)
 	return i, err
 }
