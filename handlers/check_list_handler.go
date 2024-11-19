@@ -39,12 +39,12 @@ type NewCheckListItem struct {
 func (l *CheckListHandler) GetCheckList(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	jwtClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	listIDStr := c.Param("id")
@@ -59,18 +59,18 @@ func (l *CheckListHandler) GetCheckList(c echo.Context) error {
 		c.Logger().Error(err)
 	}
   checkList.ID = uint(listID)
-	return renderHTMX(c, http.StatusOK, pages.CheckList(checkList), jwtClaims)
+	return renderHTMX(c, http.StatusOK, pages.CheckList(checkList), true)
 }
 
 func (l *CheckListHandler) GetCheckLists(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	jwtClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	checkLists, err := l.checklistService.GetByUser(c.Request().Context(), jwtClaims.UserID)
@@ -78,20 +78,20 @@ func (l *CheckListHandler) GetCheckLists(c echo.Context) error {
 		c.Logger().Error(err)
 		checkLists = []models.CheckListRecord{}
 	}
-	return renderHTMX(c, http.StatusOK, pages.CheckLists(checkLists), jwtClaims)
+	return renderHTMX(c, http.StatusOK, pages.CheckLists(checkLists), true)
 }
 
 func (l *CheckListHandler) PostItem(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
 		// TODO: Render error for API
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	jwtClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
 		// TODO: Render error for API
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	listIDStr := c.Param("id")
@@ -127,13 +127,13 @@ func (l *CheckListHandler) PostCheckList(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
 		// TODO: Render error for API
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	jwtClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
 		// TODO: Render error for API
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	var listData NewCheckList

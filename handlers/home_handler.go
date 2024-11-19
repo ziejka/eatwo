@@ -26,48 +26,49 @@ func NewHome(dreamGetter DreamGetter) *Home {
 func (h *Home) GetProtectedAbout(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	jwtClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 	dreams, err := h.dreamGetter.GetByUserID(c.Request().Context(), jwtClaims.UserID)
 	if err != nil {
 		return renderError(c, http.StatusInternalServerError, "Could not get dreams")
 	}
 
-	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Email, dreams), jwtClaims)
+	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Name, dreams), true)
 }
 
 func (h *Home) GetHome(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.HomePagePublic(), nil)
+		return renderHTMX(c, http.StatusOK, pages.HomePagePublic(), false)
 	}
 
 	jwtClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
 		c.Logger().Error("Invalid claims type")
-		return renderHTMX(c, http.StatusOK, pages.HomePagePublic(), nil)
+		return renderHTMX(c, http.StatusOK, pages.HomePagePublic(), false)
 	}
 	dreams, err := h.dreamGetter.GetByUserID(c.Request().Context(), jwtClaims.UserID)
+
 	if err != nil {
 		return renderError(c, http.StatusInternalServerError, "Could not get dreams")
 	}
 
-	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Email, dreams), jwtClaims)
+	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Name, dreams), true)
 }
 
 func (h *Home) GetSignUp(c echo.Context) error {
 	redirectToHomeWhenLogged(c)
-	return renderHTMX(c, http.StatusOK, pages.SignUpPage(), nil)
+	return renderHTMX(c, http.StatusOK, pages.SignUpPage(), false)
 }
 
 func (h *Home) GetLogIn(c echo.Context) error {
 	redirectToHomeWhenLogged(c)
-	return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+	return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 }
 
 func redirectToHomeWhenLogged(c echo.Context) error {

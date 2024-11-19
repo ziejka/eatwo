@@ -4,7 +4,6 @@ import (
 	"context"
 	"eatwo/models"
 	"eatwo/shared"
-	"eatwo/views/pages"
 	"errors"
 	"net/http"
 
@@ -40,7 +39,7 @@ func (a *AuthHandler) DeleteLogout(c echo.Context) error {
 	}
 
 	c.SetCookie(cookie)
-	return render(c, http.StatusOK, pages.HomePageWithNavigation(""))
+  return c.Redirect(http.StatusSeeOther, "/")
 }
 
 func (a *AuthHandler) PostLogIn(c echo.Context) error {
@@ -62,7 +61,8 @@ func (a *AuthHandler) PostLogIn(c echo.Context) error {
 	if err != nil {
 		return renderError(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
-	return render(c, http.StatusOK, pages.HomePageWithNavigation(user.Email))
+
+  return c.Redirect(http.StatusSeeOther, "/")
 }
 
 func (a *AuthHandler) PostSignUp(c echo.Context) error {
@@ -72,13 +72,13 @@ func (a *AuthHandler) PostSignUp(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
 	}
 
-  c.Logger().Infof("signUpData: %+v", signUpData)
+	c.Logger().Infof("signUpData: %+v", signUpData)
 	user, err := a.userAuthService.Create(c.Request().Context(), signUpData)
 	if err != nil {
 		c.Logger().Error(err.Error())
 
 		if errors.Is(err, shared.ErrUserWithEmailExist) {
-      // TODO: Don't expose this information to the user
+			// TODO: Don't expose this information to the user
 			return renderError(c, http.StatusUnauthorized, "User with that email already exist")
 		}
 		return renderError(c, http.StatusUnauthorized, "Could not create user")
@@ -89,7 +89,7 @@ func (a *AuthHandler) PostSignUp(c echo.Context) error {
 		return renderError(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
 
-	return render(c, http.StatusCreated, pages.HomePageWithNavigation(user.Email))
+  return c.Redirect(http.StatusSeeOther, "/")
 }
 
 func (a *AuthHandler) setTokenCookie(c echo.Context, user models.User) error {

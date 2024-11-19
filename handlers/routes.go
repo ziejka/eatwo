@@ -13,7 +13,7 @@ type Services struct {
 	DreamService     DreamUpdater
 	TokenGenerator   TokenGenerator
 	UserAuthService  UserAuthService
-  SettingsService  SettingsService
+	SettingsService  SettingsService
 }
 
 func SetRoutes(e *echo.Echo, services Services) {
@@ -22,6 +22,11 @@ func SetRoutes(e *echo.Echo, services Services) {
 	dreamHander := NewDreamHandler(services.AIService, services.DreamService)
 	homeHandler := NewHome(services.DreamService)
 	settings := NewSettingsHandler(services.SettingsService)
+
+	// Auth
+	e.POST("/api/v1/sing-up", authHandler.PostSignUp)
+	e.POST("/api/v1/login", authHandler.PostLogIn)
+	e.DELETE("/api/v1/logout", authHandler.DeleteLogout)
 
 	// home routes
 	e.GET("/", homeHandler.GetHome)
@@ -32,7 +37,7 @@ func SetRoutes(e *echo.Echo, services Services) {
 	// account settings
 	e.GET("/account-settings", settings.GetAccountSettings)
 	e.POST("/api/v1/account-settings/user", settings.PostUserUpdate)
-  e.DELETE("/api/v1/account-settings/user", settings.DeleteUser)
+	e.DELETE("/api/v1/account-settings/user", settings.DeleteUser)
 
 	// dream routes
 	e.POST("/api/v1/dream", dreamHander.PostDream)
@@ -42,9 +47,4 @@ func SetRoutes(e *echo.Echo, services Services) {
 	e.GET("/check-list/:id", checkListHandler.GetCheckList)
 	e.POST("/api/v1/check-list", checkListHandler.PostCheckList)
 	e.POST("/api/v1/check-list/:id", checkListHandler.PostItem)
-
-	// Auth
-	e.POST("/api/v1/sing-up", authHandler.PostSignUp)
-	e.POST("/api/v1/user", authHandler.PostLogIn)
-	e.DELETE("/api/v1/logout", authHandler.DeleteLogout)
 }

@@ -41,12 +41,12 @@ type DreamRequestBody struct {
 func (l *DreamHandler) PostDream(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	customClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), nil)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
 	}
 
 	var dreamRequestBody DreamRequestBody

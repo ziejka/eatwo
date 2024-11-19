@@ -1,8 +1,6 @@
 package layouts
 
-import "eatwo/services"
-
-templ Base(claims *services.CustomClaims, children ...templ.Component) {
+templ Base(isAuthenticated bool, children ...templ.Component) {
 	<html>
 		<head>
 			<title>Templ + HTMX + Tailwind</title>
@@ -15,14 +13,13 @@ templ Base(claims *services.CustomClaims, children ...templ.Component) {
 		</head>
 		<body class="font-serif relative bg-storm-gray-950 text-mirage-100">
 			<header class="fixed bottom-0 w-full">
-				if claims == nil {
+				if !isAuthenticated {
 					@UnlogNavigation()
 				} else {
 					@LoggedNavigation()
 				}
 			</header>
 			<div id="loading-overlay"></div>
-			<div id="error-message" class="hidden"></div>
 			<main id="main" class="pb-20 md:pb-0">
 				for _, child := range children {
 					@child

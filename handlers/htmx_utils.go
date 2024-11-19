@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"eatwo/services"
 	"eatwo/views/components"
 	"eatwo/views/layouts"
 
@@ -21,9 +20,9 @@ func render(c echo.Context, statusCode int, t templ.Component) error {
 	return c.HTML(statusCode, buf.String())
 }
 
-func renderHTMX(c echo.Context, statusCode int, t templ.Component, claims *services.CustomClaims) error {
+func renderHTMX(c echo.Context, statusCode int, t templ.Component, isAuthenticated bool) error {
 	if c.Request().Header.Get("HX-Request") != "true" {
-		t = layouts.Base(claims, t)
+		t = layouts.Base(isAuthenticated, t)
 	}
 	return render(c, statusCode, t)
 }

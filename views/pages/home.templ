@@ -3,7 +3,6 @@ package pages
 import (
 	"eatwo/models"
 	"eatwo/views/components"
-	"eatwo/views/layouts"
 )
 
 templ HomePage(name string, dreams []models.Dream) {
@@ -27,21 +26,6 @@ templ HomePagePublic() {
 			Login to save your dreams and get more features.
 		</p>
 		@components.MButton("Login", "/login", templ.Attributes{"hx-get": "/login", "hx-target": "#main", "hx-push-url": "true"})
-	}
-}
-
-// Used only in auth handler
-templ HomePageWithNavigation(name string) {
-	if name == "" {
-		@layouts.UnlogNavigation()
-		<main id="main" hx-swap-oob="true">
-			@HomePagePublic()
-		</main>
-	} else {
-		@layouts.LoggedNavigation()
-		<main id="main" hx-swap-oob="true">
-			@HomePage(name, nil)
-		</main>
 	}
 }
 

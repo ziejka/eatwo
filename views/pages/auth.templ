@@ -11,6 +11,8 @@ templ title(text string) {
 }
 
 templ LoginPage() {
+  @components.ErrorPlaceholder()
+
 	@title("Log In")
 	@components.Panel() {
 		<form
@@ -38,6 +40,8 @@ templ LoginPage() {
 }
 
 templ SignUpPage() {
+  @components.ErrorPlaceholder()
+
 	@title("Sign Up")
 	@components.Panel() {
 		<form
@@ -68,10 +72,9 @@ templ SignUpPage() {
 	}
 }
 
-templ Empty() {
-}
-
 templ AccountSettings(u models.User) {
+  @components.ErrorPlaceholder()
+
 	@title("Account Settings test")
 	@components.Panel() {
 		<form
