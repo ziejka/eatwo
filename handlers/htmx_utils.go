@@ -32,3 +32,8 @@ func renderError(c echo.Context, statusCode int, message string) error {
 	c.Response().Header().Set("HX-Reswap", "outerHTML")
 	return render(c, statusCode, components.ErrorMsg(message))
 }
+
+func redirect(c echo.Context, statusCode int, url string) error {
+  c.Response().Header().Set("HX-Redirect", url)
+  return c.NoContent(statusCode)
+}

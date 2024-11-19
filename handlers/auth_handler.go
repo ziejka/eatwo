@@ -39,7 +39,7 @@ func (a *AuthHandler) DeleteLogout(c echo.Context) error {
 	}
 
 	c.SetCookie(cookie)
-  return c.Redirect(http.StatusSeeOther, "/")
+  return redirect(c, http.StatusSeeOther, "/")
 }
 
 func (a *AuthHandler) PostLogIn(c echo.Context) error {
@@ -62,7 +62,7 @@ func (a *AuthHandler) PostLogIn(c echo.Context) error {
 		return renderError(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
 
-  return c.Redirect(http.StatusSeeOther, "/")
+  return redirect(c, http.StatusSeeOther, "/")
 }
 
 func (a *AuthHandler) PostSignUp(c echo.Context) error {
@@ -89,7 +89,7 @@ func (a *AuthHandler) PostSignUp(c echo.Context) error {
 		return renderError(c, http.StatusUnauthorized, "something went wrong please try again")
 	}
 
-  return c.Redirect(http.StatusSeeOther, "/")
+  return redirect(c, http.StatusSeeOther, "/")
 }
 
 func (a *AuthHandler) setTokenCookie(c echo.Context, user models.User) error {

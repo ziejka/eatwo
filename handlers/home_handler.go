@@ -81,5 +81,5 @@ func redirectToHomeWhenLogged(c echo.Context) error {
 	if !ok {
 		return nil
 	}
-	return c.Redirect(http.StatusSeeOther, "/")
+  return redirect(c, http.StatusSeeOther, "/")
 }

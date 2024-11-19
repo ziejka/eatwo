@@ -100,5 +100,5 @@ func (sh *SettingsHandler) DeleteUser(c echo.Context) error {
 
 	c.SetCookie(cookie)
   // Probably should redirect to a page that says "Your account has been deleted"
-  return c.Redirect(http.StatusSeeOther, "/")
+  return redirect(c, http.StatusSeeOther, "/")
 }
