@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type TokenGenerator func(user models.User) (string, error)
+type TokenGenerator func(user *models.User) (string, error)
 type Services struct {
 	AIService        AIService
 	CheckListService CheckListService

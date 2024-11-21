@@ -27,42 +27,37 @@ func NewAuthService(userRepository UserRepository) *AuthService {
 	}
 }
 
-func (a *AuthService) Validate(ctx context.Context, logInData models.UserLogIn) (models.User, error) {
+func (a *AuthService) Validate(ctx context.Context, logInData models.UserLogIn) (*models.User, error) {
 	user, err := a.userRepository.GetUser(ctx, logInData.Email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.User{}, shared.ErrUserWrongEmailOrPassword
+			return nil, shared.ErrUserWrongEmailOrPassword
 		}
-		return models.User{}, err
+		return nil, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.HashPassword), []byte(logInData.Password))
 	if err != nil {
-		return models.User{}, shared.ErrUserWrongEmailOrPassword
+		return nil, shared.ErrUserWrongEmailOrPassword
 	}
 
-	return models.User{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-	}, nil
+	return user.ToModel(), nil
 }
 
-func (a *AuthService) Create(ctx context.Context, signUpData models.UserSignUp) (models.User, error) {
+func (a *AuthService) Create(ctx context.Context, signUpData models.UserSignUp) (*models.User, error) {
 	_, err := a.userRepository.GetUser(ctx, signUpData.Email)
 	if err == nil {
-		return models.User{}, shared.ErrUserWithEmailExist
+		return nil, shared.ErrUserWithEmailExist
 	}
 	println(err.Error())
 
 	if !errors.Is(err, sql.ErrNoRows) {
-		return models.User{}, shared.ErrDefaultInternal
+		return nil, shared.ErrDefaultInternal
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(signUpData.Password), bcrypt.MinCost)
 	if err != nil {
-
-		return models.User{}, err
+		return nil, err
 	}
 
 	createUserParams := db.CreateUserParams{
@@ -74,12 +69,8 @@ func (a *AuthService) Create(ctx context.Context, signUpData models.UserSignUp) 
 	user, err := a.userRepository.CreateUser(ctx, createUserParams)
 
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
-	return models.User{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-	}, nil
+	return user.ToModel(), nil
 }

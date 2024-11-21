@@ -26,11 +26,7 @@ func (s *SettingsService) GetUser(ctx context.Context, userID string) (*models.U
 		return nil, err
 	}
 
-	return &models.User{
-		ID:    user.ID,
-		Email: user.Email,
-		Name:  user.Name,
-	}, nil
+	return user.ToModel(), nil
 }
 
 func (s *SettingsService) UpdateUser(ctx context.Context, userUpdateData models.UserUpdate, userID string) (*models.User, error) {
@@ -44,11 +40,7 @@ func (s *SettingsService) UpdateUser(ctx context.Context, userUpdateData models.
 		return nil, err
 	}
 
-	return &models.User{
-		ID:    user.ID,
-		Email: user.Email,
-		Name:  user.Name,
-	}, nil
+	return user.ToModel(), nil
 }
 
 func (s *SettingsService) DeleteUserAndData(ctx context.Context, userID string) error {

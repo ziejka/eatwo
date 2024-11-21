@@ -18,7 +18,7 @@ type AIService interface {
 type DreamUpdater interface {
 	Create(ctx context.Context, prompt string, userID string) (*models.Dream, error)
 	GetByUserID(ctx context.Context, userID string) ([]models.Dream, error)
-	UpdateExplanation(ctx context.Context, dreamID, explanation string, userID string) error
+	UpdateExplanation(ctx context.Context, dreamID, explanation string, userID string) (*models.Dream, error)
 }
 
 type DreamHandler struct {
@@ -37,7 +37,6 @@ type DreamRequestBody struct {
 	Prompt string `form:"prompt"`
 }
 
-// /api/v1/dream
 func (l *DreamHandler) PostDream(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
@@ -69,10 +68,10 @@ func (l *DreamHandler) PostDream(c echo.Context) error {
 		return renderError(c, http.StatusBadRequest, fmt.Sprint("Could not decode a dream: ", err))
 	}
 
-	err = l.dreamUpdater.UpdateExplanation(c.Request().Context(), dream.ID, resp.Content, customClaims.UserID)
+	dream, err = l.dreamUpdater.UpdateExplanation(c.Request().Context(), dream.ID, resp.Content, customClaims.UserID)
 	if err != nil {
 		return renderError(c, http.StatusBadRequest, fmt.Sprint("Could not update dream: ", err))
 	}
 
-	return render(c, http.StatusOK, pages.DreamPromptResponse(dream.Description, resp.Content))
+	return render(c, http.StatusOK, pages.DreamPromptResponse(dream))
 }

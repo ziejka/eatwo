@@ -12,7 +12,7 @@ templ HomePage(name string, dreams []models.Dream) {
 		Unveil the Secrets of Your Dreams Today
 	</h1>
 	for _, dream := range dreams {
-		@DreamExplained(dream.Description, dream.Explanation)
+		@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("2006-01-02"))
 	}
 	@DreamPrompt("What did you dream about?")
 }
@@ -47,14 +47,17 @@ templ DreamPrompt(question string) {
 	</div>
 }
 
-templ DreamExplained(dream string, response string) {
+templ DreamExplained(description string, explanation string, date string) {
 	@components.Panel() {
-		<p class="text-mirage-300 text-right mb-4 italic">{ dream }</p>
-		<p class="">{ response } </p>
+		<div>
+			<p>{ date }</p>
+			<p class="text-mirage-300 text-right mb-4 italic">{ description }</p>
+		</div>
+		<p class="">{ explanation } </p>
 	}
 }
 
-templ DreamPromptResponse(dream string, response string) {
-	@DreamExplained(dream, response)
+templ DreamPromptResponse(dream *models.Dream) {
+	@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("2006-01-02"))
 	@DreamPrompt("Ask more about this dream")
 }

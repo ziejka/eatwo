@@ -17,7 +17,7 @@ type CustomClaims struct {
 	UserID string
 }
 
-func GenerateToken(user models.User) (string, error) {
+func GenerateToken(user *models.User) (string, error) {
 	jwtKey := []byte(os.Getenv("JWT_SECRET"))
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, CustomClaims{

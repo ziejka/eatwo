@@ -11,8 +11,8 @@ import (
 )
 
 type UserAuthService interface {
-	Create(ctx context.Context, signUpData models.UserSignUp) (models.User, error)
-	Validate(ctx context.Context, logInData models.UserLogIn) (models.User, error)
+	Create(ctx context.Context, signUpData models.UserSignUp) (*models.User, error)
+	Validate(ctx context.Context, logInData models.UserLogIn) (*models.User, error)
 }
 
 type AuthHandler struct {
@@ -91,7 +91,7 @@ func (a *AuthHandler) PostSignUp(c echo.Context) error {
   return redirect(c, http.StatusSeeOther, "/")
 }
 
-func (a *AuthHandler) setTokenCookie(c echo.Context, user models.User) error {
+func (a *AuthHandler) setTokenCookie(c echo.Context, user *models.User) error {
 	token, err := a.generateToken(user)
 	if err != nil {
 		return err

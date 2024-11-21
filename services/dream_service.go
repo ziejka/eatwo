@@ -40,23 +40,21 @@ func (s *DreamService) Create(ctx context.Context, prompt string, userID string)
 		return nil, err
 	}
 
-	return &models.Dream{
-		ID:          dream.ID,
-		UserID:      dream.UserID,
-		Description: dream.Description,
-		Explanation: dream.Explanation,
-		Date:        now,
-	}, nil
+	return dream.ToModel(), nil
 }
 
-func (s *DreamService) UpdateExplanation(ctx context.Context, dreamID, explanation string, userID string) error {
-	_, err := s.dreamRepository.UpdateDreamExplanation(ctx, db.UpdateDreamExplanationParams{
+func (s *DreamService) UpdateExplanation(ctx context.Context, dreamID, explanation string, userID string) (*models.Dream, error) {
+	dream, err := s.dreamRepository.UpdateDreamExplanation(ctx, db.UpdateDreamExplanationParams{
 		ID:          dreamID,
 		Explanation: explanation,
 		UserID:      userID,
 	})
 
-	return err
+  if err != nil {
+    return nil, err
+  }
+
+	return dream.ToModel(), nil
 }
 
 func (s *DreamService) GetByUserID(ctx context.Context, userID string) ([]models.Dream, error) {
@@ -67,19 +65,9 @@ func (s *DreamService) GetByUserID(ctx context.Context, userID string) ([]models
 
 	var dreams []models.Dream
 	for _, dream := range dreamsRecords {
-		date, err := time.Parse(time.RFC822, dream.Date)
-		if err != nil {
-			return nil, err
-		}
-
-		dreams = append(dreams, models.Dream{
-			ID:          dream.ID,
-			UserID:      dream.UserID,
-			Description: dream.Description,
-			Explanation: dream.Explanation,
-			Date:        date,
-		})
+		dreams = append(dreams, *dream.ToModel())
 	}
 
 	return dreams, nil
 }
+
