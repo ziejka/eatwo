@@ -574,6 +574,10 @@ video {
   top: 0.5rem;
 }
 
+.float-right {
+  float: right;
+}
+
 .m-2 {
   margin: 0.5rem;
 }
@@ -621,6 +625,18 @@ video {
   margin-top: 1.5rem;
 }
 
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
 .block {
   display: block;
 }
@@ -650,6 +666,23 @@ video {
   width: 100%;
 }
 
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.w-4\/5 {
+  width: 80%;
+}
+
+.w-11\/12 {
+  width: 91.666667%;
+}
+
+.max-w-screen-lg {
+  max-width: 1024px;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
@@ -658,12 +691,28 @@ video {
   flex-direction: column;
 }
 
+.content-center {
+  align-content: center;
+}
+
+.content-between {
+  align-content: space-between;
+}
+
 .items-center {
   align-items: center;
 }
 
+.justify-end {
+  justify-content: flex-end;
+}
+
 .justify-center {
   justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
 }
 
 .gap-1 {
@@ -676,6 +725,18 @@ video {
 
 .gap-4 {
   gap: 1rem;
+}
+
+.space-y-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+}
+
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
 }
 
 .text-nowrap {
@@ -692,6 +753,10 @@ video {
 
 .rounded-lg {
   border-radius: 0.5rem;
+}
+
+.rounded-md {
+  border-radius: 0.375rem;
 }
 
 .border {
@@ -769,8 +834,62 @@ video {
   background-color: rgb(41 41 41 / var(--tw-bg-opacity));
 }
 
+.bg-mirage-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(242 245 252 / var(--tw-bg-opacity));
+}
+
+.bg-mirage-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(62 72 143 / var(--tw-bg-opacity));
+}
+
+.bg-wild-sand-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 248 248 / var(--tw-bg-opacity));
+}
+
+.bg-wild-sand-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(61 61 61 / var(--tw-bg-opacity));
+}
+
+.bg-the-blue-950 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(23 52 84 / var(--tw-bg-opacity));
+}
+
+.bg-the-blue-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(41 151 237 / var(--tw-bg-opacity));
+}
+
+.bg-mirage-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(70 85 175 / var(--tw-bg-opacity));
+}
+
+.bg-mirage-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(80 102 192 / var(--tw-bg-opacity));
+}
+
+.bg-storm-gray-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(247 247 248 / var(--tw-bg-opacity));
+}
+
+.bg-storm-gray-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(57 56 66 / var(--tw-bg-opacity));
+}
+
 .p-4 {
   padding: 1rem;
+}
+
+.p-2 {
+  padding: 0.5rem;
 }
 
 .px-3 {
@@ -798,6 +917,16 @@ video {
   padding-bottom: 0.5rem;
 }
 
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 .pb-20 {
   padding-bottom: 5rem;
 }
@@ -808,6 +937,14 @@ video {
 
 .pt-4 {
   padding-top: 1rem;
+}
+
+.pt-1 {
+  padding-top: 0.25rem;
+}
+
+.pt-2 {
+  padding-top: 0.5rem;
 }
 
 .text-center {
@@ -896,6 +1033,16 @@ video {
   color: rgb(189 189 189 / var(--tw-text-opacity));
 }
 
+.text-mirage-400 {
+  --tw-text-opacity: 1;
+  color: rgb(130 158 216 / var(--tw-text-opacity));
+}
+
+.text-mirage-200 {
+  --tw-text-opacity: 1;
+  color: rgb(205 217 240 / var(--tw-text-opacity));
+}
+
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
@@ -914,6 +1061,11 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-black {
+  --tw-shadow-color: #000;
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .transition-all {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -928,6 +1080,10 @@ video {
 .placeholder\:text-mirage-300::placeholder {
   --tw-text-opacity: 1;
   color: rgb(170 191 230 / var(--tw-text-opacity));
+}
+
+.first-of-type\:mt-0:first-of-type {
+  margin-top: 0px;
 }
 
 .hover\:border-b-the-blue-800:hover {

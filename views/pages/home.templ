@@ -11,10 +11,12 @@ templ HomePage(name string, dreams []models.Dream) {
 		<br/>
 		Unveil the Secrets of Your Dreams Today
 	</h1>
+  <div class="max-w-screen-lg mx-auto">
 	for _, dream := range dreams {
-		@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("2006-01-02"))
+		@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("02 Januyary 2006"))
 	}
 	@DreamPrompt("What did you dream about?")
+  </div>
 }
 
 templ HomePagePublic() {
@@ -48,16 +50,16 @@ templ DreamPrompt(question string) {
 }
 
 templ DreamExplained(description string, explanation string, date string) {
-	@components.Panel() {
-		<div>
-			<p>{ date }</p>
-			<p class="text-mirage-300 text-right mb-4 italic">{ description }</p>
+	<div class="first-of-type:mt-0 mt-6 rounded-lg">
+		<p class="text-mirage-300 text-right text-nowrap mb-2 px-2">{ date }</p>
+		<div class="bg-mirage-900 rounded-lg pt-2">
+			<p class="bg-mirage-950 shadow p-4 text-mirage-300 text-right italic">{ description }</p>
+			<p class="p-4">{ explanation } </p>
 		</div>
-		<p class="">{ explanation } </p>
-	}
+	</div>
 }
 
 templ DreamPromptResponse(dream *models.Dream) {
-	@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("2006-01-02"))
+	@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("02 Januyary 2006"))
 	@DreamPrompt("Ask more about this dream")
 }
