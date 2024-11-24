@@ -6,17 +6,17 @@ import (
 )
 
 templ HomePage(name string, dreams []models.Dream) {
-	<h1 class="px-4 my-6 text-2xl text-center font-semibold">
+	<h1 class="px-4 py-6 mb-6 text-xl text-center font-semibold bg-storm-gray-900 shadow">
 		Welcome, { name }!
 		<br/>
 		Unveil the Secrets of Your Dreams Today
 	</h1>
-	<div class="max-w-screen-md mx-auto">
+	@components.Wrapper() {
 		for _, dream := range dreams {
 			@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("02 Januyary 2006"))
 		}
 		@DreamPrompt("What did you dream about?")
-	</div>
+	}
 }
 
 templ HomePagePublic() {
@@ -62,6 +62,8 @@ templ DreamExplained(description string, explanation string, date string) {
 }
 
 templ DreamPromptResponse(dream *models.Dream) {
-	@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("02 January 2006"))
-	@DreamPrompt("Ask more about this dream")
+	@components.Panel() {
+		@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("02 January 2006"))
+		@DreamPrompt("Ask more about this dream")
+	}
 }

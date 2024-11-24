@@ -73,3 +73,9 @@ templ ErrorMsg(message string) {
 templ ErrorPlaceholder() {
 	<div id="error-message" class="hidden"></div>
 }
+
+templ Wrapper() {
+  <div class="max-w-screen-md mx-auto">
+    { children... }
+  </div>
+}
