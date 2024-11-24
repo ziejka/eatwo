@@ -20,7 +20,7 @@ templ Base(isAuthenticated bool, children ...templ.Component) {
 				}
 			</header>
 			<div id="loading-overlay"></div>
-			<main id="main" class="pb-20 md:pb-0">
+			<main id="main" class="pb-20">
 				for _, child := range children {
 					@child
 				}

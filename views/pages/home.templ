@@ -11,12 +11,12 @@ templ HomePage(name string, dreams []models.Dream) {
 		<br/>
 		Unveil the Secrets of Your Dreams Today
 	</h1>
-  <div class="max-w-screen-lg mx-auto">
-	for _, dream := range dreams {
-		@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("02 Januyary 2006"))
-	}
-	@DreamPrompt("What did you dream about?")
-  </div>
+	<div class="max-w-screen-md mx-auto">
+		for _, dream := range dreams {
+			@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("02 Januyary 2006"))
+		}
+		@DreamPrompt("What did you dream about?")
+	</div>
 }
 
 templ HomePagePublic() {
@@ -32,7 +32,7 @@ templ HomePagePublic() {
 }
 
 templ DreamPrompt(question string) {
-	<div id="dream-prompt" class="mt-2">
+	<div id="dream-prompt" class="mt-8">
 		<div id="error-message" class="hidden"></div>
 		@components.Panel() {
 			<h2 class="font-semibold mb-4">{ question }</h2>
@@ -50,16 +50,18 @@ templ DreamPrompt(question string) {
 }
 
 templ DreamExplained(description string, explanation string, date string) {
-	<div class="first-of-type:mt-0 mt-6 rounded-lg">
-		<p class="text-mirage-300 text-right text-nowrap mb-2 px-2">{ date }</p>
-		<div class="bg-mirage-900 rounded-lg pt-2">
-			<p class="bg-mirage-950 shadow p-4 text-mirage-300 text-right italic">{ description }</p>
-			<p class="p-4">{ explanation } </p>
+	<div class="first-of-type:mt-0 mt-6 rounded-lg px-2">
+		<p class="text-mirage-300 text-right text-nowrap mb-2">{ date }</p>
+		<div class="mt-2 pl-4 flex justify-end">
+			<p class="w-fit bg-mirage-950 shadow-lg shadow-gray-900 rounded-md p-4 text-mirage-300">{ description }</p>
+		</div>
+		<div class="pt-2 pr-4 mt-2">
+			<p class="p-4 w-fit bg-mirage-900 rounded-lg shadow-gray-900 shadow-md">{ explanation } </p>
 		</div>
 	</div>
 }
 
 templ DreamPromptResponse(dream *models.Dream) {
-	@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("02 Januyary 2006"))
+	@DreamExplained(dream.Description, dream.Explanation, dream.Date.Format("02 January 2006"))
 	@DreamPrompt("Ask more about this dream")
 }
