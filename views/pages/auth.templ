@@ -12,36 +12,37 @@ templ title(text string) {
 
 templ LoginPage() {
 	@components.ErrorPlaceholder()
-	@title("Log In")
-	@components.Panel() {
-		<form
-			hx-post="/api/v1/login"
-			hx-indicator="#loading-overlay"
-			class="grid gap-4 w-80 mx-auto rounded-lg p-4"
-			hx-target="#main"
-		>
-			<div class="grid gap-1">
-				<label for="email">Email</label>
-				@components.Input("email", "text", "anna@email.com", true)
-			</div>
-			<div class="grid gap-1">
-				<label for="email">Password</label>
-				@components.Input("password", "password", "Complicated password", true)
-			</div>
-			<div class="mx-center w-full mt-5">
-				@components.MButton("Log In", components.Submit, templ.Attributes{})
-			</div>
-			<div class="mx-auto">
-				@layouts.NavLink("/sing-up", "or Sing Up")
-			</div>
-		</form>
+	@components.Wrapper() {
+		@title("Log In")
+		@components.Panel() {
+			<form
+				hx-post="/api/v1/login"
+				hx-indicator="#loading-overlay"
+				class="grid gap-4 w-80 mx-auto rounded-lg p-4"
+				hx-target="#main"
+			>
+				<div class="grid gap-1">
+					<label for="email">Email</label>
+					@components.Input("email", "text", "anna@email.com", true)
+				</div>
+				<div class="grid gap-1">
+					<label for="email">Password</label>
+					@components.Input("password", "password", "Complicated password", true)
+				</div>
+				<div class="mx-center w-full mt-5">
+					@components.MButton("Log In", components.Submit, templ.Attributes{})
+				</div>
+				<div class="mx-auto">
+					@layouts.NavLink("/sing-up", "or Sing Up")
+				</div>
+			</form>
+		}
 	}
 }
 
 templ SignUpPage() {
 	@components.ErrorPlaceholder()
 	@title("Sign Up")
-
 	@components.Panel() {
 		<form
 			hx-post="/api/v1/sing-up"
@@ -74,7 +75,6 @@ templ SignUpPage() {
 templ AccountSettings(u models.User) {
 	@components.ErrorPlaceholder()
 	@title("Account Settings test")
-
 	@components.Wrapper() {
 		@components.Panel() {
 			<form

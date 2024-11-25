@@ -6,10 +6,10 @@ import (
 )
 
 templ HomePage(name string, dreams []models.Dream) {
-	<h1 class="px-4 py-6 mb-6 text-xl text-center font-semibold bg-storm-gray-900 shadow">
+	<h1 class="p-4 text-xl mb-6 font-bold">
 		Welcome, { name }!
 		<br/>
-		Unveil the Secrets of Your Dreams Today
+		Unveil the Secrets of Your Dreams
 	</h1>
 	@components.Wrapper() {
 		for _, dream := range dreams {
@@ -20,10 +20,11 @@ templ HomePage(name string, dreams []models.Dream) {
 }
 
 templ HomePagePublic() {
-	<h1 class="px-4 mb-6 text-4xl font-bold">Dream decoder</h1>
-	@components.Panel() {
-		<p class="mb-6 text-lg font-normal">
+	<h1 class="p-4 pt-24 mb-10 text-3xl text-center font-bold">Dream decoder</h1>
+	@components.Wrapper() {
+		<p class="mb-6 text-lg font-normal text-center text-pretty">
 			Decode your dreams with the power of AI.
+			<br/>
 			<br/>
 			Login to save your dreams and get more features.
 		</p>
@@ -50,13 +51,13 @@ templ DreamPrompt(question string) {
 }
 
 templ DreamExplained(description string, explanation string, date string) {
-	<div class="first-of-type:mt-0 mt-6 rounded-lg px-2">
+	<div class="first-of-type:mt-0 mt-6 rounded-lg">
 		<p class="text-mirage-300 text-right text-nowrap mb-2">{ date }</p>
 		<div class="mt-2 pl-4 flex justify-end">
-			<p class="w-fit bg-mirage-950 shadow-lg shadow-gray-900 rounded-md p-4 text-mirage-300">{ description }</p>
+			<p class="w-fit bg-mirage-950 shadow-md shadow-gray-900 rounded-md p-4 text-mirage-300 border border-black">{ description }</p>
 		</div>
 		<div class="pt-2 pr-4 mt-2">
-			<p class="p-4 w-fit bg-mirage-900 rounded-lg shadow-gray-900 shadow-md">{ explanation } </p>
+			<p class="p-4 w-fit bg-mirage-900 rounded-lg shadow-md shadow-gray-900 border border-black">{ explanation } </p>
 		</div>
 	</div>
 }

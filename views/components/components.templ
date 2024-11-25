@@ -2,19 +2,18 @@ package components
 
 templ Input2(name string, inputType string, placeholder string, required bool, attrs templ.Attributes) {
 	<input
-		class="w-full md:w-fit bg-mirage-900 border-2 border-wild-sand-600 shadow-md rounded-full px-4 py-2 hover:shadow-lg transition-all focus:shadow-lg"
+		class="w-full md:w-fit shadow-md bg-storm-gray-700 border border-storm-gray-950 placeholder:text-storm-gray-400 rounded-full px-4 py-2 hover:shadow-lg transition-all focus:shadow-lg"
 		name={ name }
 		type={ inputType }
 		required?={ required }
 		placeholder={ placeholder }
-    { attrs... }
+		{ attrs... }
 	/>
 }
 
-
 templ Input(name string, inputType string, placeholder string, required bool) {
 	<input
-		class="w-full md:w-fit bg-mirage-900 border-2 border-wild-sand-600 shadow-md rounded-full px-4 py-2 hover:shadow-lg transition-all focus:shadow-lg"
+		class="w-full md:w-fit shadow-md bg-storm-gray-700 border border-storm-gray-950 placeholder:text-storm-gray-400 rounded-full px-4 py-2 hover:shadow-lg transition-all focus:shadow-lg"
 		name={ name }
 		type={ inputType }
 		required?={ required }
@@ -24,7 +23,7 @@ templ Input(name string, inputType string, placeholder string, required bool) {
 
 templ TextArea(name string, placeholder string, required bool) {
 	<textarea
-		class="w-full p-4 rounded-lg block shadow bg-mirage-900 border border-mirage-700 placeholder:text-mirage-300"
+		class="w-full p-4 rounded-lg block shadow-md bg-storm-gray-800 border border-storm-gray-950 placeholder:text-storm-gray-400"
 		cols="30"
 		rows="5"
 		name={ name }
@@ -43,7 +42,7 @@ const (
 templ MButton(text string, buttonType ButtonType, attrs templ.Attributes) {
 	<button
 		type={ string(buttonType) }
-		class="w-full md:w-fit rounded-full bg-the-blue-800 shadow-md px-5 py-2 hover:shadow-lg hover:bg-the-blue-700 transition-all text-nowrap"
+		class="w-full md:w-fit rounded-full border border-mirage-950 bg-mirage-800 shadow-md px-5 py-2 hover:shadow-lg hover:bg-the-blue-700 transition-all text-nowrap"
 		{ attrs... }
 	>
 		{ text }
@@ -53,7 +52,7 @@ templ MButton(text string, buttonType ButtonType, attrs templ.Attributes) {
 templ MDangerButton(text string, buttonType ButtonType, attrs templ.Attributes) {
 	<button
 		type={ string(buttonType) }
-		class="w-full md:w-fit rounded-full bg-storm-gray-800 shadow-md px-5 py-2 hover:shadow-lg hover:bg-storm-gray-700 transition-all text-nowrap"
+		class="w-full md:w-fit rounded-full border border-storm-gray-950 bg-storm-gray-600 shadow-md px-5 py-2 hover:shadow-lg hover:bg-storm-gray-700 transition-all text-nowrap"
 		{ attrs... }
 	>
 		{ text }
@@ -61,7 +60,7 @@ templ MDangerButton(text string, buttonType ButtonType, attrs templ.Attributes) 
 }
 
 templ Panel() {
-	<div class="panel px-2 py-4 bg-mirage-950 rounded-lg shadow-md">
+	<div class="panel px-4 py-4 bg-storm-gray-900 rounded-lg shadow-md border border-black">
 		{ children... }
 	</div>
 }
@@ -75,7 +74,7 @@ templ ErrorPlaceholder() {
 }
 
 templ Wrapper() {
-  <div class="max-w-screen-md mx-auto">
-    { children... }
-  </div>
+	<div class="max-w-screen-md mx-auto px-4">
+		{ children... }
+	</div>
 }
