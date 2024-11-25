@@ -969,6 +969,11 @@ video {
   border-color: rgb(0 0 0 / var(--tw-border-opacity));
 }
 
+.border-the-blue-950 {
+  --tw-border-opacity: 1;
+  border-color: rgb(23 52 84 / var(--tw-border-opacity));
+}
+
 .border-b-transparent {
   border-bottom-color: transparent;
 }
@@ -1368,6 +1373,11 @@ video {
 .hover\:bg-the-blue-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(28 124 217 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-mirage-700:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(70 85 175 / var(--tw-bg-opacity));
 }
 
 .hover\:text-wild-sand-100:hover {
