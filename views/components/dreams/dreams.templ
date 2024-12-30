@@ -1,0 +1,38 @@
+package dreams
+
+import (
+	"eatwo/models"
+	"eatwo/views/components"
+)
+
+templ DreamPrompt(question string) {
+	<div id="dream-prompt" class="mt-8">
+		<div id="error-message" class="hidden"></div>
+		<h2 class="font-semibold mb-4">{ question }</h2>
+		<form
+			class="m-0 flex flex-col items-center justify-center gap-2"
+			hx-post="/api/v1/dream"
+			hx-target="#dream-prompt"
+			hx-swap="outerHTML"
+		>
+			@components.TextArea("prompt", "I was flying...", true)
+			@components.MButton("Decode", "submit", templ.Attributes{})
+		</form>
+	</div>
+}
+
+templ DreamExplained(description string, explanation string) {
+	<div class="first-of-type:mt-0 mt-6 rounded-lg">
+		<div class="mt-2 pl-4 flex justify-end">
+			<p class="w-fit bg-mirage-950 shadow-md shadow-gray-900 rounded-md p-4 text-mirage-300 border border-black">{ description }</p>
+		</div>
+		<div class="pt-2 pr-4 mt-2">
+			<p class="p-4 w-fit bg-mirage-900 rounded-lg shadow-md shadow-gray-900 border border-black">{ explanation } </p>
+		</div>
+	</div>
+}
+
+templ DreamPromptResponse(dream *models.Dream) {
+	@DreamExplained(dream.Description, dream.Explanation)
+	@DreamPrompt("Ask more about this dream")
+}

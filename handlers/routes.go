@@ -8,20 +8,19 @@ import (
 
 type TokenGenerator func(user *models.User) (string, error)
 type Services struct {
-	AIService        AIService
-	CheckListService CheckListService
-	DreamService     DreamUpdater
-	TokenGenerator   TokenGenerator
-	UserAuthService  UserAuthService
-	SettingsService  SettingsService
+	AIService       AIService
+	DreamService    DreamUpdater
+	TokenGenerator  TokenGenerator
+	UserAuthService UserAuthService
+	SettingsService SettingsService
 }
 
 func SetRoutes(e *echo.Echo, services Services) {
 	authHandler := NewAuthHandler(services.UserAuthService, services.TokenGenerator)
-	checkListHandler := NewCheckListHandler(services.CheckListService)
-	dreamHander := NewDreamHandler(services.AIService, services.DreamService)
-	homeHandler := NewHome(services.DreamService)
+	dreamHandler := NewDreamHandler(services.AIService, services.DreamService)
+	homeHandler := NewHome()
 	settings := NewSettingsHandler(services.SettingsService)
+	journalHandler := NewJournalHandler(services.DreamService)
 
 	// Auth
 	e.POST("/api/v1/sing-up", authHandler.PostSignUp)
@@ -30,9 +29,11 @@ func SetRoutes(e *echo.Echo, services Services) {
 
 	// home routes
 	e.GET("/", homeHandler.GetHome)
-	e.GET("/about", homeHandler.GetProtectedAbout)
 	e.GET("/sing-up", homeHandler.GetSignUp)
 	e.GET("/login", homeHandler.GetLogIn)
+
+	// journal routes
+	e.GET("/journal", journalHandler.GetJournal)
 
 	// account settings
 	e.GET("/account-settings", settings.GetAccountSettings)
@@ -40,11 +41,11 @@ func SetRoutes(e *echo.Echo, services Services) {
 	e.DELETE("/api/v1/account-settings/user", settings.DeleteUser)
 
 	// dream routes
-	e.POST("/api/v1/dream", dreamHander.PostDream)
+	e.POST("/api/v1/dream", dreamHandler.PostDream)
 
 	// checkList
-	e.GET("/check-list", checkListHandler.GetCheckLists)
-	e.GET("/check-list/:id", checkListHandler.GetCheckList)
-	e.POST("/api/v1/check-list", checkListHandler.PostCheckList)
-	e.POST("/api/v1/check-list/:id", checkListHandler.PostItem)
+	// e.GET("/check-list", checkListHandler.GetCheckLists)
+	// e.GET("/check-list/:id", checkListHandler.GetCheckList)
+	// e.POST("/api/v1/check-list", checkListHandler.PostCheckList)
+	// e.POST("/api/v1/check-list/:id", checkListHandler.PostItem)
 }

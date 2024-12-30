@@ -50,24 +50,35 @@ func (s *DreamService) UpdateExplanation(ctx context.Context, dreamID, explanati
 		UserID:      userID,
 	})
 
-  if err != nil {
-    return nil, err
-  }
-
-	return dream.ToModel(), nil
-}
-
-func (s *DreamService) GetByUserID(ctx context.Context, userID string) ([]models.Dream, error) {
-	dreamsRecords, err := s.dreamRepository.GetDreams(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	var dreams []models.Dream
+	return dream.ToModel(), nil
+}
+
+func (s *DreamService) GetByUserID(ctx context.Context, userID string) (models.DreamsByDate, error) {
+	dreamsRecords, err := s.dreamRepository.GetDreams(ctx, userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	dreams := make(models.DreamsByDate, 0)
 	for _, dream := range dreamsRecords {
-		dreams = append(dreams, *dream.ToModel())
+		d := dream.ToModel()
+		if len(dreams) == 0 {
+			dreams = append(dreams, []*models.Dream{d})
+			continue
+		}
+
+		lastDay := dreams[len(dreams)-1]
+		if dremInDay := lastDay[0]; len(lastDay) > 0 && dremInDay.GetDateOnly() == d.GetDateOnly() {
+			dreams[len(dreams)-1] = append(lastDay, d)
+		} else {
+			dreams = append(dreams, []*models.Dream{d})
+		}
 	}
 
 	return dreams, nil
 }
-

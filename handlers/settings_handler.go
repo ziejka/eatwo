@@ -30,12 +30,12 @@ func NewSettingsHandler(settingsService SettingsService) *SettingsHandler {
 func (sh *SettingsHandler) GetAccountSettings(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage())
 	}
 
 	jwtClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage())
 	}
 
 	user, err := sh.settingsService.GetUser(c.Request().Context(), jwtClaims.UserID)
@@ -44,18 +44,18 @@ func (sh *SettingsHandler) GetAccountSettings(c echo.Context) error {
 		return renderError(c, http.StatusInternalServerError, "Failed to get user")
 	}
 
-	return renderHTMX(c, http.StatusOK, pages.AccountSettings(*user), true)
+	return renderHTMX(c, http.StatusOK, pages.AccountSettings(*user))
 }
 
 func (sh *SettingsHandler) PostUserUpdate(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage())
 	}
 
 	jwtClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage())
 	}
 
 	var userUpdate models.UserUpdate
@@ -69,18 +69,18 @@ func (sh *SettingsHandler) PostUserUpdate(c echo.Context) error {
 		return renderError(c, http.StatusInternalServerError, "Failed to update user")
 	}
 
-	return renderHTMX(c, http.StatusOK, pages.AccountSettings(*user), true)
+	return renderHTMX(c, http.StatusOK, pages.AccountSettings(*user))
 }
 
 func (sh *SettingsHandler) DeleteUser(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage())
 	}
 
 	jwtClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage())
 	}
 
 	err := sh.settingsService.DeleteUserAndData(c.Request().Context(), jwtClaims.UserID)
@@ -99,6 +99,6 @@ func (sh *SettingsHandler) DeleteUser(c echo.Context) error {
 	}
 
 	c.SetCookie(cookie)
-  // Probably should redirect to a page that says "Your account has been deleted"
-  return redirect(c, http.StatusSeeOther, "/")
+	// Probably should redirect to a page that says "Your account has been deleted"
+	return redirect(c, http.StatusSeeOther, "/")
 }

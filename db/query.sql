@@ -1,128 +1,128 @@
 -- name: GetUser :one
 SELECT
-  *
+    *
 FROM
-  users
+    users
 WHERE
-  email = ?
+    email = ?
 LIMIT
-  1;
+    1;
 
 -- name: CreateUser :one
 INSERT INTO
-  users (id, email, name, hash_password)
+    users (id, email, name, hash_password)
 VALUES
-  (?, ?, ?, ?) RETURNING *;
+    (?, ?, ?, ?) RETURNING *;
 
 -- name: GetUserByID :one
 SELECT
-  *
+    *
 FROM
-  users
+    users
 WHERE
-  id = ?
+    id = ?
 LIMIT
-  1;
+    1;
 
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE
-  id = ?;
+    id = ?;
 
 -- name: UpdateUser :one
 UPDATE users
 SET
-  email = ?,
-  name = ?
+    email = ?,
+    name = ?
 WHERE
-  id = ? RETURNING *;
+    id = ? RETURNING *;
 
 -- name: CreateDream :one
 INSERT INTO
-  dreams (id, user_id, description, explanation, date)
+    dreams (id, user_id, description, explanation, date)
 VALUES
-  (?, ?, ?, ?, ?) RETURNING *;
+    (?, ?, ?, ?, ?) RETURNING *;
 
 -- name: DeleteDreamsForUser :exec
 DELETE FROM dreams
 WHERE
-  user_id = ?;
+    user_id = ?;
 
 -- name: UpdateDreamExplanation :one
 UPDATE dreams
 SET
-  explanation = ?
+    explanation = ?
 WHERE
-  id = ?
-  AND user_id = ? RETURNING *;
+    id = ?
+    AND user_id = ? RETURNING *;
 
 -- name: GetDreams :many
 SELECT
-  *
+    *
 FROM
-  dreams
+    dreams
 WHERE
-  user_id = ?
+    user_id = ?
 ORDER BY
-  date;
+    date DESC;
 
 -- name: GetCheckListByUser :many
 SELECT
-  l.id,
-  l.user_id,
-  l.name
+    l.id,
+    l.user_id,
+    l.name
 FROM
-  lists l
+    lists l
 WHERE
-  l.user_id = ?;
+    l.user_id = ?;
 
 -- name: GetListWithItemsByListId :many
 SELECT
-  l.id,
-  l.name,
-  i.id,
-  i."value"
+    l.id,
+    l.name,
+    i.id,
+    i."value"
 FROM
-  lists l
-  JOIN items i ON i.list_id = l.id
+    lists l
+    JOIN items i ON i.list_id = l.id
 WHERE
-  l.id = ?
-  AND l.user_id = ?;
+    l.id = ?
+    AND l.user_id = ?;
 
 -- name: DeleteListsForUser :exec
 DELETE FROM lists
 WHERE
-  user_id = ?;
+    user_id = ?;
 
 -- name: CreateList :one
 INSERT INTO
-  lists (name, user_id)
+    lists (name, user_id)
 VALUES
-  (?, ?) RETURNING *;
+    (?, ?) RETURNING *;
 
 -- name: GetListIDByUser :many
 SELECT
-  id
+    id
 FROM
-  lists
+    lists
 WHERE
-  id = ?
-  AND user_id = ?;
+    id = ?
+    AND user_id = ?;
 
 -- name: CreateItem :one
 INSERT INTO
-  items (value, list_id)
+    items (value, list_id)
 VALUES
-  (?, ?) RETURNING *;
+    (?, ?) RETURNING *;
 
 -- name: DeleteItemsForUser :exec
 DELETE FROM items
 WHERE
-  list_id IN (
-    SELECT
-      id
-    FROM
-      lists
-    WHERE
-      user_id = ?
-  );
+    list_id IN (
+        SELECT
+            id
+        FROM
+            lists
+        WHERE
+            user_id = ?
+    );

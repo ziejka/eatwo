@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"eatwo/services"
 	"eatwo/views/components"
 	"eatwo/views/layouts"
 
@@ -20,9 +21,18 @@ func render(c echo.Context, statusCode int, t templ.Component) error {
 	return c.HTML(statusCode, buf.String())
 }
 
-func renderHTMX(c echo.Context, statusCode int, t templ.Component, isAuthenticated bool) error {
+func renderHTMX(c echo.Context, statusCode int, t templ.Component) error {
+	name := ""
+	claims := c.Get("claims")
+	if claims != nil {
+		customClaims, ok := claims.(*services.CustomClaims)
+		if ok {
+			name = customClaims.Name
+		}
+	}
+
 	if c.Request().Header.Get("HX-Request") != "true" {
-		t = layouts.Base(isAuthenticated, t)
+		t = layouts.Base(name, t)
 	}
 	return render(c, statusCode, t)
 }
@@ -34,6 +44,6 @@ func renderError(c echo.Context, statusCode int, message string) error {
 }
 
 func redirect(c echo.Context, statusCode int, url string) error {
-  c.Response().Header().Set("HX-Redirect", url)
-  return c.NoContent(statusCode)
+	c.Response().Header().Set("HX-Redirect", url)
+	return c.NoContent(statusCode)
 }

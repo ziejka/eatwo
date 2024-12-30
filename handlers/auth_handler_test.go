@@ -80,7 +80,7 @@ func TestAuthHandler_LogInPostHandler(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	pages.HomePage("existing@example.com").Render(req.Context(), &buf)
+	pages.HomePage().Render(req.Context(), &buf)
 	expectedBody := buf.String()
 	body := rec.Body.String()
 	if !strings.Contains(body, expectedBody) {
@@ -167,7 +167,7 @@ func TestAuthHandler_SignUpPostHandler(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	pages.HomePage("new@example.com").Render(req.Context(), &buf)
+	pages.HomePage().Render(req.Context(), &buf)
 	expectedBody := buf.String()
 	body := rec.Body.String()
 	if !strings.Contains(body, expectedBody) {

@@ -1,22 +1,22 @@
 package layouts
 
-templ Base(isAuthenticated bool, children ...templ.Component) {
+templ Base(name string, children ...templ.Component) {
 	<html>
 		<head>
 			<title>Templ + HTMX + Tailwind</title>
 			<link href="/css/tailwind.css" type="text/css" rel="stylesheet"/>
 			<link rel="preconnect" href="https://fonts.googleapis.com"/>
 			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-			<link href="https://fonts.googleapis.com/css2?family=Junge&display=swap" rel="stylesheet"/>
+			<link async href="https://fonts.googleapis.com/css2?family=Junge&display=swap" rel="stylesheet"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<script src="/js/htmx.min.js"></script>
 		</head>
 		<body class="font-serif relative bg-storm-gray-950 text-mirage-100">
 			<header class="fixed bottom-0 w-full">
-				if !isAuthenticated {
+				if name == "" {
 					@UnlogNavigation()
 				} else {
-					@LoggedNavigation()
+					@LoggedNavigation(name)
 				}
 			</header>
 			<div id="loading-overlay"></div>
@@ -26,7 +26,7 @@ templ Base(isAuthenticated bool, children ...templ.Component) {
 				}
 			</main>
 		</body>
-		<script src="/js/index.js"></script>
+		<script type="module" src="/js/index.js"></script>
 	</html>
 }
 
@@ -44,12 +44,10 @@ templ UnlogNavigation() {
 	}
 }
 
-templ LoggedNavigation() {
+templ LoggedNavigation(name string) {
 	@Navigation() {
-		@NavLink("/check-list", "CheckLists")
-		@NavLink("/about", "About")
-		@NavLink("/account-settings", "Settings")
-		@NavLogoutLink()
+		@NavLink("/journal", "Your Journal")
+		@UserDropdown(name)
 	}
 }
 
@@ -64,8 +62,39 @@ templ NavLink(url string, text string) {
 
 templ NavLogoutLink() {
 	<a
-		class="cursor-pointer font-medium text-wild-sand-300 pb-4 border-b border-b-transparent hover:text-wild-sand-100 hover:border-b-the-blue-800 transition-all ml-auto"
+		class="block cursor-pointer font-medium text-wild-sand-300 border-b border-b-transparent hover:text-wild-sand-100 hover:border-b-the-blue-800 transition-all ml-auto"
 		hx-target="#main"
 		hx-delete="/api/v1/logout"
 	>Logout</a>
+}
+
+templ UserDropdown(name string) {
+	<div
+		class="relative cursor-pointer font-medium text-wild-sand-300 border-b border-b-transparent hover:text-wild-sand-100 hover:border-b-the-blue-800 transition-all ml-auto"
+	>
+		<p
+			data-toggle
+			data-toggle-target="#user-dropdown-content"
+			data-toggle-class="hidden"
+		>{ name }</p>
+		<div
+			id="user-dropdown-content"
+			class="hidden fixed w-screen space-y-4 right-0 bottom-12 rounded py-4 px-4 bg-gray-500"
+		>
+			<div
+				class="text-right"
+				data-toggle
+				data-toggle-target="#user-dropdown-content"
+				data-toggle-class="hidden"
+			>X</div>
+			<div
+				data-toggle
+				data-toggle-target="#user-dropdown-content"
+				data-toggle-class="hidden"
+			>
+				@NavLink("/account-settings", "Profile")
+			</div>
+			@NavLogoutLink()
+		</div>
+	</div>
 }

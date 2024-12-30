@@ -4,6 +4,7 @@ import (
 	"context"
 	"eatwo/models"
 	"eatwo/services"
+	"eatwo/views/components/dreams"
 	"eatwo/views/pages"
 	"fmt"
 	"net/http"
@@ -17,7 +18,7 @@ type AIService interface {
 
 type DreamUpdater interface {
 	Create(ctx context.Context, prompt string, userID string) (*models.Dream, error)
-	GetByUserID(ctx context.Context, userID string) ([]models.Dream, error)
+	GetByUserID(ctx context.Context, userID string) (models.DreamsByDate, error)
 	UpdateExplanation(ctx context.Context, dreamID, explanation string, userID string) (*models.Dream, error)
 }
 
@@ -40,12 +41,12 @@ type DreamRequestBody struct {
 func (l *DreamHandler) PostDream(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage())
 	}
 
 	customClaims, ok := claims.(*services.CustomClaims)
 	if !ok {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
+		return renderHTMX(c, http.StatusOK, pages.LoginPage())
 	}
 
 	var dreamRequestBody DreamRequestBody
@@ -73,5 +74,5 @@ func (l *DreamHandler) PostDream(c echo.Context) error {
 		return renderError(c, http.StatusBadRequest, fmt.Sprint("Could not update dream: ", err))
 	}
 
-	return render(c, http.StatusOK, pages.DreamPromptResponse(dream))
+	return render(c, http.StatusOK, dreams.DreamPromptResponse(dream))
 }

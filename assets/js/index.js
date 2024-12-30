@@ -1,4 +1,7 @@
-document.body.addEventListener('htmx:beforeSwap', function(evt) {
+import { setup } from "./toggleManager.js";
+setup();
+
+document.body.addEventListener("htmx:beforeSwap", function (evt) {
   if (evt.detail.xhr.status === 404) {
     // alert the user when a 404 occurs (maybe use a nicer mechanism than alert())
     alert("Error: Could Not Find Resource");

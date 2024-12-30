@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"context"
-	"eatwo/models"
 	"eatwo/services"
 	"eatwo/views/pages"
 	"net/http"
@@ -10,65 +8,34 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type DreamGetter interface {
-	GetByUserID(ctx context.Context, userID string) ([]models.Dream, error)
-}
-type Home struct {
-	dreamGetter DreamGetter
-}
+type Home struct{}
 
-func NewHome(dreamGetter DreamGetter) *Home {
-	return &Home{
-		dreamGetter: dreamGetter,
-	}
-}
-
-func (h *Home) GetProtectedAbout(c echo.Context) error {
-	claims := c.Get("claims")
-	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
-	}
-
-	jwtClaims, ok := claims.(*services.CustomClaims)
-	if !ok {
-		return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
-	}
-	dreams, err := h.dreamGetter.GetByUserID(c.Request().Context(), jwtClaims.UserID)
-	if err != nil {
-		return renderError(c, http.StatusInternalServerError, "Could not get dreams")
-	}
-
-	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Name, dreams), true)
+func NewHome() *Home {
+	return &Home{}
 }
 
 func (h *Home) GetHome(c echo.Context) error {
 	claims := c.Get("claims")
 	if claims == nil {
-		return renderHTMX(c, http.StatusOK, pages.HomePagePublic(), false)
+		return renderHTMX(c, http.StatusOK, pages.HomePagePublic())
 	}
 
-	jwtClaims, ok := claims.(*services.CustomClaims)
+	_, ok := claims.(*services.CustomClaims)
 	if !ok {
 		c.Logger().Error("Invalid claims type")
-		return renderHTMX(c, http.StatusOK, pages.HomePagePublic(), false)
+		return renderHTMX(c, http.StatusOK, pages.HomePagePublic())
 	}
-	dreams, err := h.dreamGetter.GetByUserID(c.Request().Context(), jwtClaims.UserID)
-
-	if err != nil {
-		return renderError(c, http.StatusInternalServerError, "Could not get dreams")
-	}
-
-	return renderHTMX(c, http.StatusOK, pages.HomePage(jwtClaims.Name, dreams), true)
+	return renderHTMX(c, http.StatusOK, pages.HomePage())
 }
 
 func (h *Home) GetSignUp(c echo.Context) error {
 	redirectToHomeWhenLogged(c)
-	return renderHTMX(c, http.StatusOK, pages.SignUpPage(), false)
+	return renderHTMX(c, http.StatusOK, pages.SignUpPage())
 }
 
 func (h *Home) GetLogIn(c echo.Context) error {
 	redirectToHomeWhenLogged(c)
-	return renderHTMX(c, http.StatusOK, pages.LoginPage(), false)
+	return renderHTMX(c, http.StatusOK, pages.LoginPage())
 }
 
 func redirectToHomeWhenLogged(c echo.Context) error {

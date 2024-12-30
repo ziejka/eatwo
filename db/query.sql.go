@@ -11,9 +11,9 @@ import (
 
 const createDream = `-- name: CreateDream :one
 INSERT INTO
-  dreams (id, user_id, description, explanation, date)
+    dreams (id, user_id, description, explanation, date)
 VALUES
-  (?, ?, ?, ?, ?) RETURNING id, user_id, description, explanation, date
+    (?, ?, ?, ?, ?) RETURNING id, user_id, description, explanation, date
 `
 
 type CreateDreamParams struct {
@@ -45,9 +45,9 @@ func (q *Queries) CreateDream(ctx context.Context, arg CreateDreamParams) (Dream
 
 const createItem = `-- name: CreateItem :one
 INSERT INTO
-  items (value, list_id)
+    items (value, list_id)
 VALUES
-  (?, ?) RETURNING id, value, list_id
+    (?, ?) RETURNING id, value, list_id
 `
 
 type CreateItemParams struct {
@@ -64,9 +64,9 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 
 const createList = `-- name: CreateList :one
 INSERT INTO
-  lists (name, user_id)
+    lists (name, user_id)
 VALUES
-  (?, ?) RETURNING id, name, user_id
+    (?, ?) RETURNING id, name, user_id
 `
 
 type CreateListParams struct {
@@ -83,9 +83,9 @@ func (q *Queries) CreateList(ctx context.Context, arg CreateListParams) (List, e
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO
-  users (id, email, name, hash_password)
+    users (id, email, name, hash_password)
 VALUES
-  (?, ?, ?, ?) RETURNING id, email, name, hash_password
+    (?, ?, ?, ?) RETURNING id, email, name, hash_password
 `
 
 type CreateUserParams struct {
@@ -115,7 +115,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 const deleteDreamsForUser = `-- name: DeleteDreamsForUser :exec
 DELETE FROM dreams
 WHERE
-  user_id = ?
+    user_id = ?
 `
 
 func (q *Queries) DeleteDreamsForUser(ctx context.Context, userID string) error {
@@ -126,14 +126,14 @@ func (q *Queries) DeleteDreamsForUser(ctx context.Context, userID string) error 
 const deleteItemsForUser = `-- name: DeleteItemsForUser :exec
 DELETE FROM items
 WHERE
-  list_id IN (
-    SELECT
-      id
-    FROM
-      lists
-    WHERE
-      user_id = ?
-  )
+    list_id IN (
+        SELECT
+            id
+        FROM
+            lists
+        WHERE
+            user_id = ?
+    )
 `
 
 func (q *Queries) DeleteItemsForUser(ctx context.Context, userID string) error {
@@ -144,7 +144,7 @@ func (q *Queries) DeleteItemsForUser(ctx context.Context, userID string) error {
 const deleteListsForUser = `-- name: DeleteListsForUser :exec
 DELETE FROM lists
 WHERE
-  user_id = ?
+    user_id = ?
 `
 
 func (q *Queries) DeleteListsForUser(ctx context.Context, userID string) error {
@@ -155,7 +155,7 @@ func (q *Queries) DeleteListsForUser(ctx context.Context, userID string) error {
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users
 WHERE
-  id = ?
+    id = ?
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id string) error {
@@ -165,13 +165,13 @@ func (q *Queries) DeleteUser(ctx context.Context, id string) error {
 
 const getCheckListByUser = `-- name: GetCheckListByUser :many
 SELECT
-  l.id,
-  l.user_id,
-  l.name
+    l.id,
+    l.user_id,
+    l.name
 FROM
-  lists l
+    lists l
 WHERE
-  l.user_id = ?
+    l.user_id = ?
 `
 
 type GetCheckListByUserRow struct {
@@ -205,13 +205,13 @@ func (q *Queries) GetCheckListByUser(ctx context.Context, userID string) ([]GetC
 
 const getDreams = `-- name: GetDreams :many
 SELECT
-  id, user_id, description, explanation, date
+    id, user_id, description, explanation, date
 FROM
-  dreams
+    dreams
 WHERE
-  user_id = ?
+    user_id = ?
 ORDER BY
-  date
+    date DESC
 `
 
 func (q *Queries) GetDreams(ctx context.Context, userID string) ([]Dream, error) {
@@ -245,12 +245,12 @@ func (q *Queries) GetDreams(ctx context.Context, userID string) ([]Dream, error)
 
 const getListIDByUser = `-- name: GetListIDByUser :many
 SELECT
-  id
+    id
 FROM
-  lists
+    lists
 WHERE
-  id = ?
-  AND user_id = ?
+    id = ?
+    AND user_id = ?
 `
 
 type GetListIDByUserParams struct {
@@ -283,16 +283,16 @@ func (q *Queries) GetListIDByUser(ctx context.Context, arg GetListIDByUserParams
 
 const getListWithItemsByListId = `-- name: GetListWithItemsByListId :many
 SELECT
-  l.id,
-  l.name,
-  i.id,
-  i."value"
+    l.id,
+    l.name,
+    i.id,
+    i."value"
 FROM
-  lists l
-  JOIN items i ON i.list_id = l.id
+    lists l
+    JOIN items i ON i.list_id = l.id
 WHERE
-  l.id = ?
-  AND l.user_id = ?
+    l.id = ?
+    AND l.user_id = ?
 `
 
 type GetListWithItemsByListIdParams struct {
@@ -337,13 +337,13 @@ func (q *Queries) GetListWithItemsByListId(ctx context.Context, arg GetListWithI
 
 const getUser = `-- name: GetUser :one
 SELECT
-  id, email, name, hash_password
+    id, email, name, hash_password
 FROM
-  users
+    users
 WHERE
-  email = ?
+    email = ?
 LIMIT
-  1
+    1
 `
 
 func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
@@ -360,13 +360,13 @@ func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
 
 const getUserByID = `-- name: GetUserByID :one
 SELECT
-  id, email, name, hash_password
+    id, email, name, hash_password
 FROM
-  users
+    users
 WHERE
-  id = ?
+    id = ?
 LIMIT
-  1
+    1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
@@ -384,10 +384,10 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
 const updateDreamExplanation = `-- name: UpdateDreamExplanation :one
 UPDATE dreams
 SET
-  explanation = ?
+    explanation = ?
 WHERE
-  id = ?
-  AND user_id = ? RETURNING id, user_id, description, explanation, date
+    id = ?
+    AND user_id = ? RETURNING id, user_id, description, explanation, date
 `
 
 type UpdateDreamExplanationParams struct {
@@ -412,10 +412,10 @@ func (q *Queries) UpdateDreamExplanation(ctx context.Context, arg UpdateDreamExp
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
 SET
-  email = ?,
-  name = ?
+    email = ?,
+    name = ?
 WHERE
-  id = ? RETURNING id, email, name, hash_password
+    id = ? RETURNING id, email, name, hash_password
 `
 
 type UpdateUserParams struct {

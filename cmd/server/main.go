@@ -31,12 +31,11 @@ func main() {
 	repository := db.New(sqlDB)
 
 	s := handlers.Services{
-		AIService:        services.NewMockAIService(),
-		CheckListService: services.NewCheckListService(repository),
-		DreamService:     services.NewDreamService(repository),
-		TokenGenerator:   services.GenerateToken,
-		UserAuthService:  services.NewAuthService(repository),
-    SettingsService:  services.NewSettingsService(repository, sqlDB),
+		AIService:       services.NewMockAIService(),
+		DreamService:    services.NewDreamService(repository),
+		TokenGenerator:  services.GenerateToken,
+		UserAuthService: services.NewAuthService(repository),
+		SettingsService: services.NewSettingsService(repository, sqlDB),
 	}
 
 	e := echo.New()

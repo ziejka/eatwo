@@ -1,0 +1,25 @@
+package pages
+
+import (
+	"eatwo/models"
+	"eatwo/views/components"
+	dc "eatwo/views/components/dreams"
+)
+
+templ GetJournal(dreams models.DreamsByDate) {
+	<h1 class="p-4 text-xl text-center mb-6 font-bold">
+		Journal
+	</h1>
+	@components.Wrapper() {
+		for _, d := range dreams {
+			@DreamyByDate(d)
+		}
+	}
+}
+
+templ DreamyByDate(dreams []*models.Dream) {
+	<h3 class="border-b mt-4 border-mirage-700">{ dreams[0].GetDateOnly() }</h3>
+	for _, dream := range dreams {
+		@dc.DreamExplained(dream.Description, dream.Explanation)
+	}
+}
